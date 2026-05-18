@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdvisorE</title>
+  
+  
+  
+  
+<link rel="stylesheet" href="css/main.css"><script src="js/main.js" defer=""></script><style>#__subapp-back__{display:none!important}</style></head>
+<body><div id="__subapp-back__" style="position:sticky;top:0;z-index:9999;padding:9px 16px;background:#fafafa;border-bottom:1px solid #e4e4e4;font-family:system-ui,sans-serif;font-size:13px;display:flex;align-items:center;gap:8px;"><a href="../../index.html" id="__back-link__" style="display:flex;align-items:center;gap:6px;text-decoration:none;color:#111;font-weight:500;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="12,4 6,10 12,16"></polyline></svg>Dashboard</a><span style="color:#bbb;font-size:11px;margin-left:4px;">/ ✦ AdvisorE Global AI</span></div>
+<div class="app">
+
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="sidebar">
+    <div class="logo-wrap" data-tip="AdvisorE">
+      <svg class="logo-svg" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 4h16M5 13h11M5 22h16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"></path>
+      </svg>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-btn active-adviser" id="nav-adviser" data-tip="Adviser" onclick="switchMode('adviser')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+      </button>
+      <button class="nav-btn" id="nav-coder" data-tip="Coder" onclick="switchMode('coder')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+      </button>
+      <button class="nav-btn" id="nav-researcher" data-tip="Research" onclick="switchMode('researcher')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </button>
+      <div class="nav-divider"></div>
+      <button class="nav-btn" id="nav-tasks" data-tip="Tasks" onclick="switchMode('tasks')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+      </button>
+      <button class="nav-btn" id="nav-cowork" data-tip="Cowork" onclick="switchMode('cowork')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <button class="icon-btn" data-tip="Download AdvisorE" onclick="downloadHTML()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+      </button>
+      <button class="icon-btn" data-tip="Settings" onclick="openSettings()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+      </button>
+      <div class="profile-badge" data-tip="Profile">AE</div>
+    </div>
+  </aside>
+
+  <!-- ═══════ MAIN ═══════ -->
+  <main class="main">
+
+    <!-- Mode switcher bar -->
+    <div class="mode-bar" id="mode-bar">
+      <button class="mode-tab active-adviser" id="tab-adviser" onclick="switchMode('adviser')">Adviser</button>
+      <button class="mode-tab" id="tab-coder" onclick="switchMode('coder')">Coder</button>
+      <button class="mode-tab" id="tab-researcher" onclick="switchMode('researcher')">Researcher</button>
+    </div>
+
+    <!-- ── Adviser chat ── -->
+    <div class="panel chat-panel active" id="panel-adviser">
+      <div class="watermark"><span class="watermark-letter">E</span></div>
+      <div class="messages-area" id="msgs-adviser">
+        <div class="welcome-wrap" id="welcome-adviser">
+          <div class="welcome-box">
+            <div class="welcome-glyph adviser-glyph">E</div>
+            <div class="welcome-title">Adviser Mode</div>
+            <div class="welcome-desc" id="welcome-desc-adviser">Your strategic AI adviser, powered by Llama. Ask about business, career, decisions, or any challenge you're facing.</div>
+            <div class="setup-steps" id="setup-steps-adviser" style="display: block;">
+              <div class="setup-step"><span class="step-num">1</span><span>Sign up free at <a class="setup-link" href="https://console.groq.com" target="_blank">console.groq.com</a> — no credit card needed</span></div>
+              <div class="setup-step"><span class="step-num">2</span><span>Go to API Keys and create a new key</span></div>
+              <div class="setup-step"><span class="step-num">3</span><span><a class="setup-link" href="#" onclick="openSettings();return false;">Open Settings</a> here and paste your key</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="messages-inner" id="inner-adviser"></div>
+      </div>
+      <div class="input-wrap">
+        <div class="input-box">
+          <textarea class="chat-textarea" id="input-adviser" placeholder="Ask your adviser anything..." rows="1" onkeydown="onKey(event,'adviser')" oninput="autoResize(this)"></textarea>
+          <div class="input-footer">
+            <div class="input-tools-row">
+              <label class="tool-icon-btn" data-tip="Attach file">
+                <input type="file" onchange="onFile(event,'adviser')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                </svg>
+              </label>
+            </div>
+            <button class="send-btn" id="send-adviser" onclick="sendMsg('adviser')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Coder chat ── -->
+    <div class="panel chat-panel" id="panel-coder">
+      <div class="watermark"><span class="watermark-letter">E</span></div>
+      <div class="messages-area" id="msgs-coder">
+        <div class="welcome-wrap" id="welcome-coder">
+          <div class="welcome-box">
+            <div class="welcome-glyph coder-glyph">E</div>
+            <div class="welcome-title">Coder Mode</div>
+            <div class="welcome-desc" id="welcome-desc-coder">Your expert AI developer. Write, review, debug, and architect code across any language or framework.</div>
+            <div class="setup-steps" id="setup-steps-coder" style="display: block;">
+              <div class="setup-step"><span class="step-num">1</span><span>Sign up free at <a class="setup-link" href="https://console.groq.com" target="_blank">console.groq.com</a> — no credit card needed</span></div>
+              <div class="setup-step"><span class="step-num">2</span><span>Go to API Keys and create a new key</span></div>
+              <div class="setup-step"><span class="step-num">3</span><span><a class="setup-link" href="#" onclick="openSettings();return false;">Open Settings</a> here and paste your key</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="messages-inner" id="inner-coder"></div>
+      </div>
+      <div class="input-wrap">
+        <div class="input-box" style="border-color:rgba(245,158,11,0.12)">
+          <textarea class="chat-textarea" id="input-coder" placeholder="Describe what you want to build or fix..." rows="1" onkeydown="onKey(event,'coder')" oninput="autoResize(this)"></textarea>
+          <div class="input-footer">
+            <div class="input-tools-row">
+              <label class="tool-icon-btn" data-tip="Attach file">
+                <input type="file" onchange="onFile(event,'coder')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                </svg>
+              </label>
+            </div>
+            <button class="send-btn" id="send-coder" onclick="sendMsg('coder')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Researcher chat ── -->
+    <div class="panel chat-panel" id="panel-researcher">
+      <div class="watermark"><span class="watermark-letter">E</span></div>
+      <div class="messages-area" id="msgs-researcher">
+        <div class="welcome-wrap" id="welcome-researcher">
+          <div class="welcome-box">
+            <div class="welcome-glyph researcher-glyph">E</div>
+            <div class="welcome-title">Researcher Mode</div>
+            <div class="welcome-desc" id="welcome-desc-researcher">Your analytical AI researcher. Investigate topics, break down complex subjects, and compile thorough summaries.</div>
+            <div class="setup-steps" id="setup-steps-researcher" style="display: block;">
+              <div class="setup-step"><span class="step-num">1</span><span>Sign up free at <a class="setup-link" href="https://console.groq.com" target="_blank">console.groq.com</a> — no credit card needed</span></div>
+              <div class="setup-step"><span class="step-num">2</span><span>Go to API Keys and create a new key</span></div>
+              <div class="setup-step"><span class="step-num">3</span><span><a class="setup-link" href="#" onclick="openSettings();return false;">Open Settings</a> here and paste your key</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="messages-inner" id="inner-researcher"></div>
+      </div>
+      <div class="input-wrap">
+        <div class="input-box" style="border-color:rgba(168,85,247,0.12)">
+          <textarea class="chat-textarea" id="input-researcher" placeholder="What would you like me to research..." rows="1" onkeydown="onKey(event,'researcher')" oninput="autoResize(this)"></textarea>
+          <div class="input-footer">
+            <div class="input-tools-row">
+              <label class="tool-icon-btn" data-tip="Attach file">
+                <input type="file" onchange="onFile(event,'researcher')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                </svg>
+              </label>
+            </div>
+            <button class="send-btn" id="send-researcher" onclick="sendMsg('researcher')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tasks panel ── -->
+    <div class="panel" id="panel-tasks">
+      <div class="tasks-panel">
+        <div class="tasks-inner">
+          <div class="panel-title">Background Tasks</div>
+          <div class="panel-desc">Add tasks for AdvisorE to work through while you focus on something else. Each task uses Llama AI and runs independently.</div>
+
+          <div class="task-add-box">
+            <textarea class="task-textarea" id="task-input" placeholder="Describe a task... e.g. 'Draft a professional follow-up email after a job interview' or 'Write a Python script to rename files by date'"></textarea>
+            <div class="task-add-footer">
+              <select class="mode-select" id="task-mode">
+                <option value="adviser">Adviser</option>
+                <option value="coder">Coder</option>
+                <option value="researcher">Researcher</option>
+              </select>
+              <button class="add-task-btn" onclick="addTask()">Add Task</button>
+            </div>
+          </div>
+
+          <button class="run-btn" id="run-btn" onclick="runTasks()">Run All Pending Tasks</button>
+
+          <div class="task-list" id="task-list"><div class="task-empty">No tasks yet. Add one above to get started.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Cowork panel ── -->
+    <div class="panel" id="panel-cowork">
+      <div class="cowork-panel">
+        <div class="cowork-doc">
+          <div class="cowork-section-label">Document</div>
+          <input class="doc-title-input" type="text" placeholder="Untitled document...">
+          <div class="doc-toolbar">
+            <button class="doc-tool" onclick="fmt('bold')"><b>B</b></button>
+            <button class="doc-tool" onclick="fmt('italic')"><i>I</i></button>
+            <button class="doc-tool" onclick="fmt('underline')"><u>U</u></button>
+            <button class="doc-tool" onclick="fmt('heading')">H1</button>
+            <button class="doc-tool" onclick="fmt('bullet')">List</button>
+            <button class="doc-tool" onclick="fmt('code')">Code</button>
+            <button class="doc-tool" onclick="fmt('clear')">Clear</button>
+          </div>
+          <textarea class="doc-body" placeholder="Start writing... paste content, outline ideas, or draft documents. You can also use the Adviser, Coder, or Researcher tabs to generate content, then paste it here."></textarea>
+        </div>
+        <div class="cowork-notes">
+          <div class="cowork-section-label">Notes &amp; Annotations</div>
+          <textarea class="notes-textarea" id="note-input" placeholder="Add a note or annotation..."></textarea>
+          <button class="add-note-btn" onclick="addNote()">+ Add Note</button>
+          <div class="notes-list" id="notes-list"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════ SETTINGS MODAL ═══════ -->
+<div class="overlay" id="settings-overlay" onclick="overlayClick(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Settings</div>
+      <button class="close-btn" onclick="closeSettings()">✕</button>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Groq API Key</label>
+      <input type="password" class="field-input" id="key-input" placeholder="gsk_..." onblur="autosaveKey(this.value)" oninput="updateKeyStatus()">
+      <div class="field-hint">
+        Get your free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a> — no credit card needed.
+        <div class="key-status" id="key-status"></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">AI Model</label>
+      <select class="field-select" id="model-select">
+        <optgroup label="── Llama 4 ─────────────────">
+          <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout — Vision + fast, ~750 t/s</option>
+        </optgroup>
+        <optgroup label="── Llama 3 ─────────────────">
+          <option value="llama-3.3-70b-versatile">Llama 3.3 70B — Deep answers, ~280 t/s</option>
+          <option value="llama-3.1-8b-instant">Llama 3.1 8B — Blazing fast, ~560 t/s</option>
+        </optgroup>
+        <optgroup label="── Reasoning ──────────────">
+          <option value="openai/gpt-oss-120b">GPT OSS 120B — Best reasoning, ~500 t/s</option>
+          <option value="openai/gpt-oss-20b">GPT OSS 20B — Reasoning, ~1000 t/s</option>
+          <option value="qwen/qwen3-32b">Qwen 3 32B — Reasoning, ~400 t/s</option>
+        </optgroup>
+      </select>
+      <div class="field-hint">Llama 4 Scout is the default. Reasoning models show a collapsible thinking trace. All models are free on Groq's free tier.</div>
+    </div>
+
+    <button class="save-btn" onclick="saveSettings()">Save Settings</button>
+  </div>
+</div>
+
+<!-- ═══════ TOAST ═══════ -->
+<div class="toast" id="toast"></div>
+
+
+
+
+</body></html>

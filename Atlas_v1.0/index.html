@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Atlas</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif}
+    /* AUTH */
+    #auth{position:fixed;inset:0;display:flex;z-index:1000;background:#f5f5f7}
+    #auth.hidden{display:none}
+    .auth-left{flex:1;position:relative;overflow:hidden;background:#111;min-height:0}
+    @media(max-width:680px){.auth-left{display:none}}
+    .auth-bg{width:100%;height:100%;object-fit:cover;opacity:.82;display:block}
+    .auth-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,.2) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:40px}
+    .auth-ol-brand{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+    .auth-ol-mark{width:42px;height:42px;border-radius:11px;background:#fff;color:#111;font-weight:900;font-size:19px;display:grid;place-items:center}
+    .auth-ol-name{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.4px}
+    .auth-ol-tag{font-size:14px;color:rgba(255,255,255,.7)}
+    .auth-right{width:420px;flex-shrink:0;background:#fff;display:flex;align-items:center;justify-content:center;padding:40px 32px;overflow-y:auto}
+    @media(max-width:680px){.auth-right{width:100%}}
+    .auth-box{width:100%;max-width:320px}
+    .auth-box-brand{display:flex;align-items:center;gap:9px;margin-bottom:26px}
+    .auth-box-mark{width:32px;height:32px;border-radius:8px;background:#111;color:#fff;font-weight:900;font-size:14px;display:grid;place-items:center}
+    .auth-box-name{font-size:17px;font-weight:800;color:#111;letter-spacing:-.3px}
+    .auth-tabs{display:flex;border:1px solid #e5e5ea;border-radius:8px;padding:3px;margin-bottom:20px;background:#fafafa}
+    .auth-tab{flex:1;padding:7px;border-radius:5px;font-size:13px;font-weight:500;border:none;background:none;cursor:pointer;color:#86868b;transition:all .15s}
+    .auth-tab.active{background:#fff;color:#111;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+    .auth-fields{display:flex;flex-direction:column;gap:11px;margin-bottom:12px}
+    .auth-field{display:flex;flex-direction:column;gap:4px}
+    .auth-field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .auth-lbl{font-size:11.5px;font-weight:500;color:#4b4b53}
+    .auth-inp{padding:9px 11px;border:1px solid #e5e5ea;border-radius:7px;font-size:13.5px;background:#fff;color:#111;outline:none;transition:border-color .15s;width:100%;font-family:inherit}
+    .auth-inp:focus{border-color:#111;box-shadow:0 0 0 3px rgba(0,0,0,.07)}
+    .auth-err{font-size:12px;color:#e0245e;min-height:16px;margin-bottom:2px}
+    .auth-btn{width:100%;padding:10px;background:#111;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:2px;transition:background .15s;font-family:inherit}
+    .auth-btn:hover{background:#222}
+    .auth-legal{text-align:center;font-size:11px;color:#b2b2b8;margin-top:18px}
+    /* SHELL */
+    #shell{display:none;height:100vh;flex-direction:column;overflow:hidden}
+    #shell.visible{display:flex}
+    .s-topbar{display:flex;align-items:center;gap:8px;height:50px;padding:0 14px;background:#fff;border-bottom:1px solid #e5e5ea;flex-shrink:0;z-index:50}
+    .s-body{display:flex;flex:1;overflow:hidden}
+    .s-sidebar{width:210px;flex-shrink:0;background:#fafafa;border-right:1px solid #e5e5ea;display:flex;flex-direction:column;overflow-y:auto}
+    .s-main{flex:1;overflow:hidden;display:flex}
+    .s-frame{width:100%;height:100%;border:none;flex:1}
+    /* Topbar elements */
+    .tb-ico{width:32px;height:32px;display:grid;place-items:center;border-radius:7px;cursor:pointer;border:none;background:none;color:#4b4b53;flex-shrink:0;transition:background .1s}
+    .tb-ico:hover{background:#f5f5f7}
+    .tb-ico svg{width:17px;height:17px}
+    .tb-brand{display:flex;align-items:center;gap:7px;margin-right:6px}
+    .tb-mark{width:24px;height:24px;border-radius:6px;background:#111;color:#fff;font-weight:900;font-size:12px;display:grid;place-items:center;flex-shrink:0}
+    .tb-wordmark{font-size:14px;font-weight:800;color:#111;letter-spacing:-.3px}
+    .tb-crumb{display:flex;align-items:center;gap:5px;color:#86868b;font-size:12.5px}
+    .tb-sep{color:#d1d1d6;font-size:16px;font-weight:200}
+    .tb-app-name{font-weight:500;color:#4b4b53}
+    .tb-spacer{flex:1}
+    .tb-search{display:flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid #e5e5ea;border-radius:7px;color:#86868b;font-size:12.5px;background:#fafafa;cursor:pointer;font-family:inherit;transition:border-color .15s}
+    .tb-search:hover{border-color:#aaa;color:#111}
+    .tb-search svg{width:13px;height:13px}
+    .tb-search kbd{font-size:10.5px;background:#f0f0f0;padding:1px 5px;border-radius:3px;border:1px solid #d1d1d6;font-family:inherit;color:#86868b}
+    .tb-clock{font-size:12px;font-weight:600;color:#86868b;width:38px;text-align:right;flex-shrink:0}
+    .tb-bell{width:32px;height:32px;display:grid;place-items:center;border-radius:7px;cursor:pointer;border:none;background:none;color:#4b4b53;position:relative;flex-shrink:0}
+    .tb-bell:hover{background:#f5f5f7}
+    .tb-bell svg{width:17px;height:17px}
+    .tb-bell-dot{position:absolute;top:6px;right:7px;width:6px;height:6px;border-radius:50%;background:#e0245e;border:2px solid #fff;display:none}
+    .tb-advisor{display:flex;align-items:center;gap:6px;padding:5px 11px;border:1px solid #e5e5ea;border-radius:7px;font-size:12.5px;font-weight:500;color:#4b4b53;cursor:pointer;border:none;background:none;transition:background .12s;flex-shrink:0;font-family:inherit}
+    .tb-advisor:hover{background:#f5f5f7;color:#111}
+    .tb-advisor.open{background:#111;color:#fff;border-radius:7px}
+    .tb-advisor svg{width:15px;height:15px}
+    .tb-avatar-btn{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;cursor:pointer;border:none;background:#111;flex-shrink:0}
+    .tb-avatar-letter{font-size:13px;font-weight:700;color:#fff}
+    /* Sidebar */
+    .sb-sec{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#b2b2b8;padding:10px 13px 3px;margin-top:4px}
+    .sb-item{display:flex;align-items:center;gap:9px;padding:7px 13px;font-size:13px;font-weight:500;color:#4b4b53;cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:background .1s,color .1s}
+    .sb-item:hover{background:#ebebef;color:#111}
+    .sb-item.active{background:#e8e8ed;color:#111;font-weight:600}
+    .sb-item svg{width:15px;height:15px;flex-shrink:0}
+    .sb-div{height:1px;background:#e5e5ea;margin:7px 10px}
+    .sb-foot{margin-top:auto;border-top:1px solid #e5e5ea;padding:6px 0}
+    .sb-foot-btn{display:flex;align-items:center;gap:9px;padding:7px 13px;font-size:13px;font-weight:500;color:#4b4b53;cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:background .1s;font-family:inherit}
+    .sb-foot-btn:hover{background:#ebebef;color:#111}
+    .sb-foot-btn svg{width:15px;height:15px;flex-shrink:0}
+    /* Popovers */
+    .pop{position:fixed;right:10px;top:52px;background:#fff;border:1px solid #e5e5ea;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.12);z-index:300;min-width:220px;overflow:hidden;display:none}
+    .pop.open{display:block}
+    .pop-head{display:flex;align-items:center;gap:11px;padding:12px 14px}
+    .pop-av{width:36px;height:36px;border-radius:50%;background:#111;color:#fff;font-size:14px;font-weight:700;display:grid;place-items:center;flex-shrink:0}
+    .pop-name{font-size:13px;font-weight:700;color:#111}
+    .pop-email{font-size:11.5px;color:#86868b;margin-top:1px}
+    .pop-div{height:1px;background:#e5e5ea}
+    .pop-row{display:flex;align-items:center;gap:9px;padding:9px 14px;font-size:13px;font-weight:500;color:#111;width:100%;text-align:left;cursor:pointer;border:none;background:none;font-family:inherit;transition:background .1s}
+    .pop-row:hover{background:#f5f5f7}
+    .pop-row svg{width:15px;height:15px;color:#86868b}
+    .pop-row.danger{color:#e0245e}
+    .pop-row.danger svg{color:#e0245e}
+    /* Command palette */
+    .pal{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:400;align-items:flex-start;justify-content:center;padding-top:80px;backdrop-filter:blur(2px);display:none}
+    .pal.open{display:flex}
+    .pal-card{background:#fff;border-radius:10px;width:min(520px,90vw);box-shadow:0 20px 50px rgba(0,0,0,.15);overflow:hidden}
+    .pal-input-row{display:flex;align-items:center;gap:9px;padding:13px 14px;border-bottom:1px solid #e5e5ea}
+    .pal-input-row svg{width:17px;height:17px;color:#86868b;flex-shrink:0}
+    .pal-input{flex:1;border:none;outline:none;font-size:15px;color:#111;font-family:inherit}
+    .pal-items{max-height:340px;overflow-y:auto;padding:5px}
+    .pal-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:7px;cursor:pointer;font-size:13.5px;color:#111;border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:background .1s}
+    .pal-item:hover,.pal-item.sel{background:#f5f5f7}
+    /* Advisor panel */
+    .adv-overlay{position:fixed;inset:0;background:rgba(0,0,0,.15);z-index:190;display:none;opacity:0;transition:opacity .2s}
+    .adv-overlay.open{display:block;opacity:1}
+    .adv-panel{position:fixed;right:-420px;top:0;bottom:0;width:380px;max-width:95vw;background:#fff;border-left:1px solid #e5e5ea;z-index:200;display:flex;flex-direction:column;transition:right .25s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 24px rgba(0,0,0,.08)}
+    .adv-panel.open{right:0}
+    .adv-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #e5e5ea;flex-shrink:0}
+    .adv-hd-left{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#111}
+    .adv-hd-left svg{width:16px;height:16px}
+    .adv-close{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:#86868b;cursor:pointer;border:none;background:none;transition:background .1s}
+    .adv-close:hover{background:#f5f5f7}
+    .adv-close svg{width:15px;height:15px}
+    .adv-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+    .adv-welcome{display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 12px;gap:9px}
+    .adv-w-ico{width:44px;height:44px;border-radius:50%;background:#f5f5f7;display:grid;place-items:center}
+    .adv-w-ico svg{width:20px;height:20px}
+    .adv-w-title{font-size:15px;font-weight:700;color:#111}
+    .adv-w-sub{font-size:12.5px;color:#86868b;line-height:1.5;max-width:260px}
+    .adv-msg-u{display:flex;justify-content:flex-end}
+    .adv-msg-a{display:flex;justify-content:flex-start}
+    .adv-bubble{max-width:86%;padding:9px 13px;border-radius:13px;font-size:13px;line-height:1.55}
+    .adv-msg-u .adv-bubble{background:#111;color:#fff;border-radius:13px 13px 3px 13px}
+    .adv-msg-a .adv-bubble{background:#f5f5f7;color:#111;border-radius:13px 13px 13px 3px}
+    .adv-dots{display:flex;gap:3px;align-items:center}
+    .adv-dots span{width:6px;height:6px;border-radius:50%;background:#86868b;animation:db 1.2s infinite}
+    .adv-dots span:nth-child(2){animation-delay:.2s}
+    .adv-dots span:nth-child(3){animation-delay:.4s}
+    @keyframes db{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+    .adv-inp-row{display:flex;gap:7px;padding:11px 13px;border-top:1px solid #e5e5ea;align-items:flex-end;flex-shrink:0}
+    .adv-inp{flex:1;border:1px solid #e5e5ea;border-radius:9px;padding:8px 11px;font-size:13px;resize:none;outline:none;max-height:110px;line-height:1.45;font-family:inherit;transition:border-color .15s}
+    .adv-inp:focus{border-color:#111}
+    .adv-send{width:34px;height:34px;border-radius:8px;background:#111;color:#fff;display:grid;place-items:center;cursor:pointer;flex-shrink:0;border:none;transition:background .12s}
+    .adv-send:hover{background:#333}
+    .adv-send svg{width:15px;height:15px}
+    /* Toast */
+    .toast-stack{position:fixed;bottom:18px;right:18px;display:flex;flex-direction:column;gap:7px;z-index:600;pointer-events:none}
+    .toast{background:#111;color:#fff;padding:9px 15px;border-radius:8px;font-size:13px;font-weight:500;pointer-events:auto;box-shadow:0 4px 14px rgba(0,0,0,.2);animation:tsUp .18s ease}
+    @keyframes tsUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    /* Notif pop */
+    .notif-pop{min-width:290px}
+    .notif-hd{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid #e5e5ea}
+    .notif-hd-title{font-size:13px;font-weight:700;color:#111}
+    .notif-clear-btn{font-size:11.5px;color:#86868b;cursor:pointer;border:none;background:none;font-family:inherit}
+    .notif-clear-btn:hover{color:#111}
+    .notif-list{max-height:280px;overflow-y:auto}
+    .notif-empty{padding:18px 14px;font-size:12.5px;color:#86868b;text-align:center}
+
+    /* ── Full AdvisorE Panel ── */
+    :root{--adv-adviser:#0071e3;--adv-coder:#f59e0b;--adv-researcher:#a855f7}
+    .adv-panel{position:fixed;right:-420px;top:0;bottom:0;width:400px;max-width:96vw;background:#fff;border-left:1px solid #e5e5ea;z-index:200;display:flex;flex-direction:column;transition:right .25s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 24px rgba(0,0,0,.08)}
+    .adv-panel.open{right:0}
+    .adv-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 0;flex-shrink:0}
+    .adv-hd-left{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:700;color:#111}
+    .adv-hd-left svg{width:15px;height:15px;color:#86868b}
+    .adv-close{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:#86868b;cursor:pointer;border:none;background:none;transition:background .1s}
+    .adv-close:hover{background:#f5f5f7}
+    .adv-close svg{width:15px;height:15px}
+    .adv-online-dot{width:7px;height:7px;border-radius:50%;background:#34c759;flex-shrink:0}
+    /* Mode tab bar */
+    .adv-tabs{display:flex;gap:2px;padding:10px 14px 0;flex-shrink:0}
+    .adv-tab{flex:1;padding:6px 4px;border-radius:8px;border:none;background:transparent;color:#86868b;font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;transition:all .18s;white-space:nowrap}
+    .adv-tab:hover{color:#111;background:#f5f5f7}
+    .adv-tab.at-adviser{background:rgba(0,113,227,.1);color:var(--adv-adviser)}
+    .adv-tab.at-coder{background:rgba(245,158,11,.1);color:var(--adv-coder)}
+    .adv-tab.at-researcher{background:rgba(168,85,247,.1);color:var(--adv-researcher)}
+    .adv-tab.at-tasks{background:#f0f0f5;color:#111}
+    .adv-tab.at-cowork{background:#f0f0f5;color:#111}
+    /* Panels */
+    .adv-pane{display:none;flex:1;flex-direction:column;min-height:0;overflow:hidden}
+    .adv-pane.active{display:flex}
+    /* Chat area */
+    .adv-chat-scroll{flex:1;overflow-y:auto;padding:12px 14px 4px;display:flex;flex-direction:column;gap:14px;min-height:0}
+    .adv-welcome{display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 16px;gap:8px;margin:auto}
+    .adv-w-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;margin-bottom:4px}
+    .adv-w-icon.wi-adviser{background:rgba(0,113,227,.08);color:var(--adv-adviser);border:1px solid rgba(0,113,227,.15)}
+    .adv-w-icon.wi-coder{background:rgba(245,158,11,.08);color:var(--adv-coder);border:1px solid rgba(245,158,11,.15)}
+    .adv-w-icon.wi-researcher{background:rgba(168,85,247,.08);color:var(--adv-researcher);border:1px solid rgba(168,85,247,.15)}
+    .adv-w-title{font-size:15px;font-weight:700;color:#111}
+    .adv-w-desc{font-size:12.5px;color:#86868b;line-height:1.55;max-width:260px}
+    .adv-w-setup{background:#f5f5f7;border:1px solid #e5e5ea;border-radius:9px;padding:12px 14px;text-align:left;margin-top:6px;font-size:12px;color:#4b4b53;line-height:1.6;max-width:280px}
+    .adv-w-setup a{color:var(--adv-adviser);text-decoration:none;font-weight:500}
+    .adv-w-setup a:hover{text-decoration:underline}
+    /* Messages */
+    .adv-msg{display:flex;gap:8px;animation:advFadeUp .22s ease}
+    @keyframes advFadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+    .adv-msg.user{flex-direction:row-reverse}
+    .adv-msg-av{width:26px;height:26px;border-radius:7px;background:#f0f0f5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#86868b;flex-shrink:0;margin-top:18px;border:1px solid #e5e5ea}
+    .adv-msg-av.av-adviser{border-color:rgba(0,113,227,.2);color:var(--adv-adviser)}
+    .adv-msg-av.av-coder{border-color:rgba(245,158,11,.2);color:var(--adv-coder)}
+    .adv-msg-av.av-researcher{border-color:rgba(168,85,247,.2);color:var(--adv-researcher)}
+    .adv-msg-body{flex:1;max-width:88%;display:flex;flex-direction:column;gap:3px}
+    .adv-msg.user .adv-msg-body{align-items:flex-end}
+    .adv-msg-meta{font-size:10.5px;color:#b2b2b8;padding:0 2px}
+    .adv-msg-bubble{padding:9px 12px;border-radius:13px;font-size:13px;line-height:1.65;word-break:break-word}
+    .adv-msg.user .adv-msg-bubble{background:#111;color:#fff;border-radius:13px 13px 3px 13px;white-space:pre-wrap}
+    .adv-msg.ai .adv-msg-bubble{background:#f5f5f7;color:#111;border-radius:13px 13px 13px 3px;border:1px solid #e5e5ea}
+    .adv-msg-bubble strong{font-weight:600;color:inherit}
+    .adv-msg-bubble code{background:rgba(0,0,0,.06);border:1px solid #e5e5ea;border-radius:4px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:12px}
+    .adv-msg-bubble pre{background:#1d1d1f;border-radius:8px;padding:10px 12px;overflow-x:auto;margin:6px 0}
+    .adv-msg-bubble pre code{background:none;border:none;padding:0;font-size:12px;color:#e5e5ea}
+    .adv-msg-bubble .adv-heading{display:block;font-weight:700;font-size:13px;margin-top:10px;margin-bottom:2px;color:#111}
+    .adv-think{border:1px solid #e5e5ea;border-radius:7px;margin-bottom:10px;overflow:hidden;background:#fafafa}
+    .adv-think summary{display:flex;align-items:center;gap:6px;padding:6px 10px;font-size:11px;font-weight:600;color:#86868b;cursor:pointer;list-style:none;text-transform:uppercase;letter-spacing:.5px}
+    .adv-think summary::before{content:'▶';font-size:7px;opacity:.5;transition:transform .2s}
+    .adv-think[open] summary::before{transform:rotate(90deg)}
+    .adv-think summary::-webkit-details-marker{display:none}
+    .adv-think-body{padding:8px 12px;font-size:12px;color:#4b4b53;border-top:1px solid #e5e5ea;white-space:pre-wrap;line-height:1.55}
+    /* Typing dots */
+    .adv-dots{display:flex;gap:4px;align-items:center;padding:4px 0}
+    .adv-dots span{width:5px;height:5px;border-radius:50%;background:#86868b;animation:advDot 1s ease infinite}
+    .adv-dots span:nth-child(2){animation-delay:.15s}
+    .adv-dots span:nth-child(3){animation-delay:.3s}
+    @keyframes advDot{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-4px);opacity:1}}
+    .adv-cursor{animation:advBlink .9s ease infinite;display:inline-block}
+    @keyframes advBlink{0%,100%{opacity:1}50%{opacity:0}}
+    /* Input */
+    .adv-inp-wrap{padding:8px 12px 12px;flex-shrink:0;border-top:1px solid #e5e5ea}
+    .adv-inp-box{background:#f5f5f7;border:1px solid #e5e5ea;border-radius:12px;padding:10px 12px 8px;display:flex;flex-direction:column;gap:6px;transition:border-color .15s}
+    .adv-inp-box:focus-within{border-color:rgba(0,0,0,.2)}
+    .adv-inp-ta{width:100%;background:transparent;border:none;outline:none;color:#111;font-family:inherit;font-size:13.5px;line-height:1.55;resize:none;min-height:22px;max-height:120px;overflow-y:auto}
+    .adv-inp-ta::placeholder{color:#b2b2b8}
+    .adv-inp-foot{display:flex;align-items:center;justify-content:space-between}
+    .adv-inp-tools{display:flex;gap:3px}
+    .adv-tool-btn{width:28px;height:28px;border-radius:6px;border:none;background:transparent;color:#86868b;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;position:relative}
+    .adv-tool-btn:hover{color:#111;background:rgba(0,0,0,.05)}
+    .adv-tool-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .adv-send-btn{width:30px;height:30px;border-radius:8px;border:none;background:#111;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s}
+    .adv-send-btn:hover{opacity:.85}
+    .adv-send-btn:disabled{opacity:.25;cursor:default}
+    /* Tasks panel */
+    .adv-tasks-scroll{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px;min-height:0}
+    .adv-tasks-hd{font-size:13px;font-weight:700;color:#111;margin-bottom:2px}
+    .adv-tasks-desc{font-size:12px;color:#86868b;margin-bottom:10px}
+    .adv-task-add{background:#f5f5f7;border:1px solid #e5e5ea;border-radius:10px;padding:11px 13px;margin-bottom:10px}
+    .adv-task-ta{width:100%;background:transparent;border:none;outline:none;color:#111;font-family:inherit;font-size:13px;line-height:1.5;resize:none;min-height:52px}
+    .adv-task-ta::placeholder{color:#b2b2b8}
+    .adv-task-add-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+    .adv-task-mode-sel{background:#fff;border:1px solid #e5e5ea;border-radius:6px;color:#4b4b53;font-family:inherit;font-size:11.5px;padding:4px 8px;outline:none;cursor:pointer}
+    .adv-add-task-btn{padding:5px 14px;border-radius:7px;border:none;background:#111;color:#fff;font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;transition:opacity .15s}
+    .adv-add-task-btn:hover{opacity:.85}
+    .adv-run-btn{width:100%;padding:9px;border-radius:9px;border:1px solid #e5e5ea;background:transparent;color:#111;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:10px;transition:background .15s}
+    .adv-run-btn:hover{background:#f5f5f7}
+    .adv-run-btn:disabled{opacity:.35;cursor:default}
+    .adv-task-list{display:flex;flex-direction:column;gap:8px}
+    .adv-task-empty{text-align:center;color:#b2b2b8;font-size:12.5px;padding:20px 0}
+    .adv-task-card{background:#f5f5f7;border:1px solid #e5e5ea;border-radius:10px;padding:11px 13px;animation:advFadeUp .22s ease}
+    .adv-task-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:5px}
+    .adv-task-mode-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px}
+    .adv-task-mode-lbl.adviser{color:var(--adv-adviser)}
+    .adv-task-mode-lbl.coder{color:var(--adv-coder)}
+    .adv-task-mode-lbl.researcher{color:var(--adv-researcher)}
+    .adv-task-prompt{font-size:12.5px;color:#111;line-height:1.45}
+    .adv-task-actions{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
+    .adv-task-status{font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:100px}
+    .adv-task-status.pending{background:rgba(0,0,0,.06);color:#86868b}
+    .adv-task-status.running{background:rgba(0,113,227,.1);color:var(--adv-adviser)}
+    .adv-task-status.done{background:rgba(52,199,89,.1);color:#1a8537}
+    .adv-task-status.error{background:rgba(255,59,48,.1);color:#c0392b}
+    .adv-task-del{background:none;border:none;color:#b2b2b8;cursor:pointer;font-size:15px;line-height:1;padding:0;transition:color .15s}
+    .adv-task-del:hover{color:#e0245e}
+    .adv-task-result{font-size:12px;color:#4b4b53;border-top:1px solid #e5e5ea;padding-top:8px;margin-top:6px;white-space:pre-wrap;line-height:1.55;word-break:break-word}
+    /* Cowork panel */
+    .adv-cowork-scroll{flex:1;overflow-y:auto;padding:12px 14px;min-height:0;display:flex;flex-direction:column;gap:10px}
+    .adv-cowork-hd{font-size:13px;font-weight:700;color:#111;margin-bottom:2px}
+    .adv-doc-title{width:100%;background:transparent;border:none;border-bottom:1px solid #e5e5ea;outline:none;color:#111;font-family:inherit;font-size:17px;font-weight:700;padding-bottom:10px;margin-bottom:10px}
+    .adv-doc-title::placeholder{color:#b2b2b8}
+    .adv-doc-toolbar{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+    .adv-doc-tool{padding:3px 9px;border-radius:5px;border:1px solid #e5e5ea;background:transparent;color:#86868b;font-family:inherit;font-size:11.5px;cursor:pointer;transition:all .15s}
+    .adv-doc-tool:hover{color:#111;border-color:#d1d1d6;background:#f5f5f7}
+    .adv-doc-body{width:100%;background:#f5f5f7;border:1px solid #e5e5ea;border-radius:10px;outline:none;color:#111;font-family:inherit;font-size:13.5px;line-height:1.75;resize:none;min-height:200px;padding:12px 14px;transition:border-color .15s}
+    .adv-doc-body:focus{border-color:rgba(0,0,0,.2);background:#fff}
+    .adv-doc-body::placeholder{color:#b2b2b8}
+    .adv-note-add{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+    .adv-note-ta{width:100%;background:#f5f5f7;border:1px solid #e5e5ea;border-radius:8px;outline:none;color:#111;font-family:inherit;font-size:12.5px;line-height:1.5;resize:none;min-height:54px;padding:9px 11px}
+    .adv-note-ta::placeholder{color:#b2b2b8}
+    .adv-add-note-btn{padding:5px 14px;border-radius:7px;border:1px solid #e5e5ea;background:transparent;color:#4b4b53;font-family:inherit;font-size:12px;cursor:pointer;align-self:flex-end;transition:all .15s}
+    .adv-add-note-btn:hover{background:#f5f5f7;border-color:#d1d1d6}
+    .adv-notes-list{display:flex;flex-direction:column;gap:7px;margin-top:6px}
+    .adv-note-card{background:#f5f5f7;border:1px solid #e5e5ea;border-left:3px solid #d1d1d6;border-radius:7px;padding:8px 28px 8px 10px;font-size:12px;color:#4b4b53;line-height:1.5;position:relative;animation:advFadeUp .2s ease}
+    .adv-note-del{position:absolute;top:5px;right:6px;background:none;border:none;color:#b2b2b8;cursor:pointer;font-size:13px;line-height:1;padding:0;transition:color .15s}
+    .adv-note-del:hover{color:#e0245e}
+    /* Offline badge */
+    .adv-offline-badge{display:none;font-size:10.5px;font-weight:600;color:#86868b;background:#f5f5f7;border:1px solid #e5e5ea;border-radius:100px;padding:1px 8px;margin-left:6px}
+    .adv-offline-badge.show{display:inline-block}
+  </style>
+</head>
+<body>
+
+<!-- ══ AUTH ══════════════════════════════════════════ -->
+<div id="auth">
+  <div class="auth-left">
+    <img src="opengraph.jpg" alt="Atlas" class="auth-bg">
+    <div class="auth-overlay">
+      <div class="auth-ol-brand">
+        <div class="auth-ol-mark">A</div>
+        <div class="auth-ol-name">Atlas</div>
+      </div>
+      <div class="auth-ol-tag">Your unified workspace.</div>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-box">
+      <div class="auth-box-brand">
+        <div class="auth-box-mark">A</div>
+        <span class="auth-box-name">Atlas</span>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="authTab('signin')">Sign in</button>
+        <button class="auth-tab" onclick="authTab('signup')">Create account</button>
+      </div>
+
+      <div id="pane-signin">
+        <div class="auth-fields">
+          <div class="auth-field">
+            <label class="auth-lbl">Email</label>
+            <input id="si-email" class="auth-inp" type="email" placeholder="you@example.com" autocomplete="email">
+          </div>
+          <div class="auth-field">
+            <label class="auth-lbl">Password</label>
+            <input id="si-pass" class="auth-inp" type="password" placeholder="••••••••" autocomplete="current-password">
+          </div>
+        </div>
+        <div class="auth-err" id="si-err"></div>
+        <button class="auth-btn" onclick="doSignIn()">Sign in</button>
+      </div>
+
+      <div id="pane-signup" style="display:none">
+        <div class="auth-fields">
+          <div class="auth-field">
+            <label class="auth-lbl">Full name</label>
+            <input id="su-name" class="auth-inp" type="text" placeholder="Jane Smith" autocomplete="name">
+          </div>
+          <div class="auth-field">
+            <label class="auth-lbl">Email</label>
+            <input id="su-email" class="auth-inp" type="email" placeholder="you@example.com" autocomplete="email">
+          </div>
+          <div class="auth-field">
+            <label class="auth-lbl">Password</label>
+            <input id="su-pass" class="auth-inp" type="password" placeholder="Min 6 characters" autocomplete="new-password">
+          </div>
+          <div class="auth-field-row">
+            <div class="auth-field">
+              <label class="auth-lbl">Pay frequency</label>
+              <select id="su-freq" class="auth-inp">
+                <option value="">Select…</option>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Bi-weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+            <div class="auth-field">
+              <label class="auth-lbl">Hourly rate ($)</label>
+              <input id="su-rate" class="auth-inp" type="number" placeholder="0" min="0" step="0.01">
+            </div>
+          </div>
+        </div>
+        <div class="auth-err" id="su-err"></div>
+        <button class="auth-btn" onclick="doSignUp()">Create account</button>
+      </div>
+
+      <div class="auth-legal">Atlas · All data stays on your device</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SHELL ══════════════════════════════════════════ -->
+<div id="shell">
+  <!-- TOPBAR -->
+  <div class="s-topbar">
+    <button class="tb-ico" onclick="toggleSidebar()" title="Toggle sidebar">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+    </button>
+    <div class="tb-brand">
+      <div class="tb-mark">A</div>
+      <span class="tb-wordmark">Atlas</span>
+    </div>
+    <div class="tb-crumb">
+      <span class="tb-sep">/</span>
+      <span class="tb-app-name" id="crumbApp">Dashboard</span>
+    </div>
+    <div class="tb-spacer"></div>
+    <button class="tb-search" onclick="openPalette()">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l3 3"/></svg>
+      Search apps…
+      <kbd>⌘K</kbd>
+    </button>
+    <span class="tb-clock" id="tbClock">--:--</span>
+    <button class="tb-bell" onclick="toggleNotifPop()" title="Notifications">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 9a4 4 0 018 0c0 3 1 4.5 1.5 5H4.5C5 13.5 6 12 6 9z"/><path d="M9 16.5a1 1 0 002 0"/></svg>
+      <span class="tb-bell-dot" id="bellDot"></span>
+    </button>
+    <button class="tb-advisor" id="advisorBtn" onclick="toggleAdvisor()">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="10" r="8"/><path d="M10 8v4M10 14h.01"/></svg>
+      AdvisorE
+    </button>
+    <button class="tb-avatar-btn" onclick="toggleAccountPop()" title="Account">
+      <span class="tb-avatar-letter" id="avLetter">A</span>
+    </button>
+  </div>
+
+  <!-- BODY -->
+  <div class="s-body">
+    <!-- SIDEBAR -->
+    <div class="s-sidebar" id="sidebar">
+      <div class="sb-sec" style="margin-top:8px">Apps</div>
+      <button class="sb-item active" data-app="dashboard" onclick="openApp('dashboard')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg>
+        Dashboard
+      </button>
+      <button class="sb-item" data-app="mail" onclick="openApp('mail')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2" y="4" width="16" height="12" rx="2"/><path d="M2 7l8 5 8-5"/></svg>
+        Mail
+      </button>
+      <button class="sb-item" data-app="chat" onclick="openApp('chat')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H8l-4 3v-3a2 2 0 01-1-1.7V5z"/></svg>
+        Chat
+      </button>
+      <button class="sb-item" data-app="calendar" onclick="openApp('calendar')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 8h14M7 2v4M13 2v4"/></svg>
+        Calendar
+      </button>
+      <button class="sb-item" data-app="drive" onclick="openApp('drive')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 15L2 10l5-7h6l5 7-2 5H4z"/><path d="M2 10h16"/></svg>
+        Drive
+      </button>
+      <button class="sb-item" data-app="stck" onclick="openApp('stck')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 17h14M5 13l3-4 3 3 4-6"/></svg>
+        STCK
+      </button>
+      <div class="sb-div"></div>
+      <div class="sb-sec">Tools</div>
+      <button class="sb-item" data-app="store" onclick="openApp('store')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h14l-1 11a2 2 0 01-2 2H6a2 2 0 01-2-2L3 6z"/><path d="M7 6V4a3 3 0 016 0v2"/></svg>
+        Store
+      </button>
+      <button class="sb-item" data-app="editor" onclick="openApp('editor')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 6L3 10l4 4M13 6l4 4-4 4M11 4l-2 12"/></svg>
+        Editor
+      </button>
+      <button class="sb-item" data-app="sitebuilder" onclick="openApp('sitebuilder')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2" y="4" width="16" height="12" rx="2"/><path d="M2 8h16"/></svg>
+        SiteBuilder
+      </button>
+      <button class="sb-item" data-app="splitter" onclick="openApp('splitter')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 3v14M5 7l-3 3 3 3M15 7l3 3-3 3"/></svg>
+        Splitter
+      </button>
+      <div class="sb-foot">
+        <button class="sb-foot-btn" onclick="openApp('settings')">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="10" r="2.5"/><path d="M16.2 10a6.2 6.2 0 01-.1 1.1l1.6 1.3-1.5 2.6-2-.8a6 6 0 01-1.9 1.1l-.3 2.1h-3l-.3-2.1A6 6 0 016.8 14l-2 .8L3.3 12.4l1.6-1.3A6.2 6.2 0 014.8 10c0-.4 0-.8.1-1.1L3.3 7.6l1.5-2.6 2 .8A6 6 0 018.7 4.7L9 2.6h3l.3 2.1a6 6 0 011.9 1.1l2-.8 1.5 2.6-1.6 1.3c.1.3.1.7.1 1.1z"/></svg>
+          Settings
+        </button>
+        <button class="sb-foot-btn" onclick="doSignOut()" style="color:#86868b">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 17H4a1 1 0 01-1-1V4a1 1 0 011-1h4M13 14l4-4-4-4M17 10H8"/></svg>
+          Sign out
+        </button>
+      </div>
+    </div>
+
+    <!-- APP FRAME -->
+    <div class="s-main">
+      <iframe class="s-frame" id="appFrame" src="" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ACCOUNT POP -->
+<div class="pop" id="accountPop">
+  <div class="pop-head">
+    <div class="pop-av" id="popAv">A</div>
+    <div>
+      <div class="pop-name" id="popName">User</div>
+      <div class="pop-email" id="popEmail"></div>
+    </div>
+  </div>
+  <div class="pop-div"></div>
+  <button class="pop-row" onclick="openApp('settings');closeAllPops()">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="10" r="2.5"/><path d="M16.2 10a6.2 6.2 0 01-.1 1.1l1.6 1.3-1.5 2.6-2-.8a6 6 0 01-1.9 1.1l-.3 2.1h-3l-.3-2.1A6 6 0 016.8 14l-2 .8L3.3 12.4l1.6-1.3A6.2 6.2 0 014.8 10c0-.4 0-.8.1-1.1L3.3 7.6l1.5-2.6 2 .8A6 6 0 018.7 4.7L9 2.6h3l.3 2.1a6 6 0 011.9 1.1l2-.8 1.5 2.6-1.6 1.3c.1.3.1.7.1 1.1z"/></svg>
+    Settings
+  </button>
+  <div class="pop-div"></div>
+  <button class="pop-row danger" onclick="doSignOut()">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 17H4a1 1 0 01-1-1V4a1 1 0 011-1h4M13 14l4-4-4-4M17 10H8"/></svg>
+    Sign out
+  </button>
+</div>
+
+<!-- NOTIF POP -->
+<div class="pop notif-pop" id="notifPop">
+  <div class="notif-hd">
+    <span class="notif-hd-title">Notifications</span>
+    <button class="notif-clear-btn" onclick="clearNotifs()">Clear all</button>
+  </div>
+  <div class="notif-list" id="notifList"><div class="notif-empty">No notifications</div></div>
+</div>
+
+<!-- COMMAND PALETTE -->
+<div class="pal" id="palette" onclick="closePalette(event)">
+  <div class="pal-card" onclick="event.stopPropagation()">
+    <div class="pal-input-row">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l3 3"/></svg>
+      <input id="palInput" class="pal-input" placeholder="Open app…" oninput="filterPalette()" onkeydown="palKey(event)">
+    </div>
+    <div class="pal-items" id="palItems"></div>
+  </div>
+</div>
+
+<!-- ADVISOR PANEL -->
+<div class="adv-overlay" id="advOverlay" onclick="toggleAdvisor()"></div>
+<div class="adv-panel" id="advPanel">
+
+  <!-- Header -->
+  <div class="adv-hd">
+    <div class="adv-hd-left">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="10" r="8"/><path d="M10 8v4M10 14h.01"/></svg>
+      AdvisorE
+      <span class="adv-offline-badge" id="advOfflineBadge">Offline</span>
+    </div>
+    <button class="adv-close" onclick="toggleAdvisor()">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg>
+    </button>
+  </div>
+
+  <!-- Mode tabs -->
+  <div class="adv-tabs">
+    <button class="adv-tab at-adviser" id="advTab-adviser" onclick="advSwitchMode('adviser')">Adviser</button>
+    <button class="adv-tab" id="advTab-coder" onclick="advSwitchMode('coder')">Coder</button>
+    <button class="adv-tab" id="advTab-researcher" onclick="advSwitchMode('researcher')">Research</button>
+    <button class="adv-tab" id="advTab-tasks" onclick="advSwitchMode('tasks')">Tasks</button>
+    <button class="adv-tab" id="advTab-cowork" onclick="advSwitchMode('cowork')">Cowork</button>
+  </div>
+
+  <!-- ── ADVISER PANE ── -->
+  <div class="adv-pane active" id="advPane-adviser">
+    <div class="adv-chat-scroll" id="advMsgs-adviser">
+      <div class="adv-welcome" id="advWelcome-adviser">
+        <div class="adv-w-icon wi-adviser">A</div>
+        <div class="adv-w-title">Adviser</div>
+        <div class="adv-w-desc">Strategic advice on business, finance, career, and decisions. Direct, structured, actionable.</div>
+        <div class="adv-w-setup" id="advSetup-adviser" style="display:none">Add your Groq API key in <a href="#" onclick="event.preventDefault();toggleAdvisor();openApp('settings')">Settings → AdvisorE</a> to enable AI.</div>
+      </div>
+      <div id="advInner-adviser"></div>
+    </div>
+    <div class="adv-inp-wrap">
+      <div class="adv-inp-box">
+        <textarea class="adv-inp-ta" id="advInput-adviser" placeholder="Ask for advice…" rows="1" onkeydown="advKey(event,'adviser')" oninput="advResize(this)"></textarea>
+        <div class="adv-inp-foot">
+          <div class="adv-inp-tools">
+            <button class="adv-tool-btn" title="Attach file"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M15.5 12.5l-6 6a4.5 4.5 0 01-6.4-6.4l8-8a3 3 0 014.2 4.2l-8 8a1.5 1.5 0 01-2.1-2.1l6-6"/></svg><input type="file" onchange="advOnFile(event,'adviser')"></button>
+          </div>
+          <button class="adv-send-btn" id="advSend-adviser" onclick="advSend('adviser')"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3L3 9l6 2 2 6 6-14z"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CODER PANE ── -->
+  <div class="adv-pane" id="advPane-coder">
+    <div class="adv-chat-scroll" id="advMsgs-coder">
+      <div class="adv-welcome" id="advWelcome-coder">
+        <div class="adv-w-icon wi-coder">&lt;/&gt;</div>
+        <div class="adv-w-title">Coder</div>
+        <div class="adv-w-desc">Production-quality code with clear explanations. Any language, any stack.</div>
+        <div class="adv-w-setup" id="advSetup-coder" style="display:none">Add your Groq API key in <a href="#" onclick="event.preventDefault();toggleAdvisor();openApp('settings')">Settings → AdvisorE</a> to enable AI.</div>
+      </div>
+      <div id="advInner-coder"></div>
+    </div>
+    <div class="adv-inp-wrap">
+      <div class="adv-inp-box">
+        <textarea class="adv-inp-ta" id="advInput-coder" placeholder="Ask about code…" rows="1" onkeydown="advKey(event,'coder')" oninput="advResize(this)"></textarea>
+        <div class="adv-inp-foot">
+          <div class="adv-inp-tools">
+            <button class="adv-tool-btn" title="Attach file"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M15.5 12.5l-6 6a4.5 4.5 0 01-6.4-6.4l8-8a3 3 0 014.2 4.2l-8 8a1.5 1.5 0 01-2.1-2.1l6-6"/></svg><input type="file" onchange="advOnFile(event,'coder')"></button>
+          </div>
+          <button class="adv-send-btn" id="advSend-coder" onclick="advSend('coder')"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3L3 9l6 2 2 6 6-14z"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RESEARCHER PANE ── -->
+  <div class="adv-pane" id="advPane-researcher">
+    <div class="adv-chat-scroll" id="advMsgs-researcher">
+      <div class="adv-welcome" id="advWelcome-researcher">
+        <div class="adv-w-icon wi-researcher">R</div>
+        <div class="adv-w-title">Researcher</div>
+        <div class="adv-w-desc">Deep research across science, business, tech and current events. Structured and thorough.</div>
+        <div class="adv-w-setup" id="advSetup-researcher" style="display:none">Add your Groq API key in <a href="#" onclick="event.preventDefault();toggleAdvisor();openApp('settings')">Settings → AdvisorE</a> to enable AI.</div>
+      </div>
+      <div id="advInner-researcher"></div>
+    </div>
+    <div class="adv-inp-wrap">
+      <div class="adv-inp-box">
+        <textarea class="adv-inp-ta" id="advInput-researcher" placeholder="What do you want to research?" rows="1" onkeydown="advKey(event,'researcher')" oninput="advResize(this)"></textarea>
+        <div class="adv-inp-foot">
+          <div class="adv-inp-tools">
+            <button class="adv-tool-btn" title="Attach file"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M15.5 12.5l-6 6a4.5 4.5 0 01-6.4-6.4l8-8a3 3 0 014.2 4.2l-8 8a1.5 1.5 0 01-2.1-2.1l6-6"/></svg><input type="file" onchange="advOnFile(event,'researcher')"></button>
+          </div>
+          <button class="adv-send-btn" id="advSend-researcher" onclick="advSend('researcher')"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3L3 9l6 2 2 6 6-14z"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TASKS PANE ── -->
+  <div class="adv-pane" id="advPane-tasks">
+    <div class="adv-tasks-scroll">
+      <div class="adv-tasks-hd">Background Tasks</div>
+      <div class="adv-tasks-desc">Queue prompts and run them all at once. Results saved even if you switch apps.</div>
+      <div class="adv-task-add">
+        <textarea class="adv-task-ta" id="advTaskInput" placeholder="Describe what you want the AI to do…"></textarea>
+        <div class="adv-task-add-row">
+          <select class="adv-task-mode-sel" id="advTaskMode">
+            <option value="adviser">Adviser</option>
+            <option value="coder">Coder</option>
+            <option value="researcher">Researcher</option>
+          </select>
+          <button class="adv-add-task-btn" onclick="advAddTask()">Add Task</button>
+        </div>
+      </div>
+      <button class="adv-run-btn" id="advRunBtn" onclick="advRunTasks()">▶ Run All Pending</button>
+      <div class="adv-task-list" id="advTaskList"><div class="adv-task-empty">No tasks yet.</div></div>
+    </div>
+  </div>
+
+  <!-- ── COWORK PANE ── -->
+  <div class="adv-pane" id="advPane-cowork">
+    <div class="adv-cowork-scroll">
+      <div class="adv-cowork-hd">Cowork Document</div>
+      <input class="adv-doc-title" id="advDocTitle" type="text" placeholder="Document title…">
+      <div class="adv-doc-toolbar">
+        <button class="adv-doc-tool" onclick="advFmt('bold')"><b>B</b></button>
+        <button class="adv-doc-tool" onclick="advFmt('italic')"><i>I</i></button>
+        <button class="adv-doc-tool" onclick="advFmt('heading')">H1</button>
+        <button class="adv-doc-tool" onclick="advFmt('bullet')">• List</button>
+        <button class="adv-doc-tool" onclick="advFmt('code')">{ }</button>
+        <button class="adv-doc-tool" onclick="advFmt('clear')" style="color:#e0245e">Clear</button>
+      </div>
+      <textarea class="adv-doc-body" id="advDocBody" placeholder="Start writing…"></textarea>
+      <div style="margin-top:14px">
+        <div class="adv-tasks-hd" style="margin-bottom:6px">Sticky Notes</div>
+        <div class="adv-note-add">
+          <textarea class="adv-note-ta" id="advNoteInput" placeholder="Add a note…"></textarea>
+          <button class="adv-add-note-btn" onclick="advAddNote()">Add Note</button>
+        </div>
+        <div class="adv-notes-list" id="advNotesList"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script src="js/main.js"></script>
+<script src="js/advisor.js"></script>
+</body>
+</html>

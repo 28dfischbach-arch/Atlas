@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111111">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>STCK</title>
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjMDAwIi8+PHRleHQgeD0iMzIiIHk9IjQ0IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXdlaWdodD0iNzAwIiBmb250LXNpemU9IjE4IiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TVENLPC90ZXh0Pjwvc3ZnPg==">
+
+
+
+
+
+<link rel="stylesheet" href="css/main.css"><script src="atlas-shim.js"></script><script src="../../vendor/chart.umd.min.js"></script><script src="../../vendor/anime.min.js"></script><script src="../../vendor/xlsx.full.min.js"></script><script src="js/main.js"></script><style>#__subapp-back__{display:none!important}</style></head>
+<body><div id="__subapp-back__" style="position:sticky;top:0;z-index:9999;padding:9px 16px;background:#fafafa;border-bottom:1px solid #e4e4e4;font-family:system-ui,sans-serif;font-size:13px;display:flex;align-items:center;gap:8px;"><a href="../../index.html" id="__back-link__" style="display:flex;align-items:center;gap:6px;text-decoration:none;color:#111;font-weight:500;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="12,4 6,10 12,16"></polyline></svg>Dashboard</a><span style="color:#bbb;font-size:11px;margin-left:4px;">/ ₮ STCK Budgeting</span></div>
+
+<!-- ══════════════════════════════════════════════════════════
+     LOGIN / SIGNUP SCREEN
+══════════════════════════════════════════════════════════════ -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     AI ONBOARDING — STEP 1: NAME & PERSONALITY
+══════════════════════════════════════════════════════════════ -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     ONBOARDING — INCOME SETUP
+══════════════════════════════════════════════════════════════ -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     AI ONBOARDING — STEP 2: CONNECT TOOLS
+══════════════════════════════════════════════════════════════ -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     ONBOARDING — STEP 3: SPREADSHEET IMPORT (OPTIONAL)
+══════════════════════════════════════════════════════════════ -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     TOOL CONNECT MODAL
+══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="tool-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeToolModal()">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="1" y1="1" x2="11" y2="11"></line><line x1="11" y1="1" x2="1" y2="11"></line></svg>
+    </button>
+    <div class="modal-title" id="modal-title">Connect Tool</div>
+    <div class="modal-sub" id="modal-sub">Configure your connection details below.</div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════════════════════════════ -->
+<div id="app-wrap">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-text">STCK</div>
+    <div class="logo-sub">Eight Figures OS</div>
+  </div>
+
+  <div class="nav-section">Main</div>
+  <div class="nav-item active" data-tip="Dashboard" onclick="showPage('dashboard')">
+    <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
+    <span>Dashboard</span>
+  </div>
+  <div class="nav-item" data-tip="Budget" onclick="showPage('budget')">
+    <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 3h18v18H3z"></path><path d="M3 9h18M9 21V9"></path></svg>
+    <span>Budget</span>
+  </div>
+  <div class="nav-item" data-tip="Charts" onclick="showPage('charts')">
+    <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+    <span>Charts</span>
+  </div>
+  <div class="nav-item" data-tip="Goals" onclick="showPage('goals')">
+    <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>
+    <span>Goals</span>
+  </div>
+
+  <div class="nav-section">Tools</div>
+  <div class="nav-item" data-tip="Hours Calc" onclick="showPage('hours')">
+    <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+    <span>Hours Calc</span>
+  </div>
+  <div class="nav-item" data-tip="Decider" onclick="showPage('decider')">
+    <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg>
+    <span>Decider</span>
+  </div>
+  <div class="nav-item" data-tip="AI Adviser" onclick="showPage('ai')">
+    <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path></svg>
+    <span>AI Adviser</span>
+  </div>
+
+  <div class="nav-section">System</div>
+  <div class="nav-item" data-tip="Settings" onclick="showPage('settings')">
+    <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"></path></svg>
+    <span>Settings</span>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div id="owner-badge" style="display:none;align-items:center;gap:6px;margin-bottom:10px;padding:6px 8px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:6px;">
+      <span style="font-size:9px;color:var(--green);letter-spacing:0.05em;">OWNER · VERIFIED</span>
+    </div>
+    <div class="sync-status">
+      <div class="sync-dot" id="syncDot"></div>
+      <span id="syncLabel">Synced</span>
+    </div>
+    <div style="margin-top:10px;">
+      <button onclick="signOut()" class="text-[#ef4444]" style="background:transparent;border:none;color:#ef4444;font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;">Sign Out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ══════════════════════ DASHBOARD ══════════════════════ -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub" id="dash-date"></div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-ghost" onclick="exportData()">Export</button>
+      <label class="btn btn-ghost" style="cursor:pointer;">Import<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
+    </div>
+  </div>
+
+  <div id="alerts-wrap" style="margin-bottom:16px;"></div>
+
+  <div class="stat-grid">
+    <div class="stat-card green">
+      <div class="stat-label">Total Income</div>
+      <div class="stat-value" id="d-income">$0</div>
+      <div class="stat-sub">YTD check total</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">Total Expenses</div>
+      <div class="stat-value" id="d-expenses">$0</div>
+      <div class="stat-sub">YTD spent</div>
+    </div>
+    <div class="stat-card" id="d-net-card">
+      <div class="stat-label">Net</div>
+      <div class="stat-value" id="d-net">$0</div>
+      <div class="stat-sub">Income − Expenses</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-label">Goal Progress</div>
+      <div class="stat-value" id="d-goal-pct">0%</div>
+      <div class="stat-sub" id="d-goal-sub">of $0 goal</div>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card" id="d-savings-card">
+      <div class="stat-label">Savings Rate</div>
+      <div class="stat-value" id="d-savings-rate">—</div>
+      <div class="stat-sub" id="d-savings-sub">of income saved</div>
+    </div>
+    <div class="stat-card" id="d-goal-time-card">
+      <div class="stat-label">Time to Goal</div>
+      <div class="stat-value" id="d-goal-time">—</div>
+      <div class="stat-sub" id="d-goal-time-sub">at current pace</div>
+    </div>
+    <div class="stat-card" id="d-next-check-card">
+      <div class="stat-label">Next Check</div>
+      <div class="stat-value" id="d-next-check">—</div>
+      <div class="stat-sub" id="d-next-check-sub">days away</div>
+    </div>
+    <div class="stat-card" id="d-week-card">
+      <div class="stat-label">This Week's Spending</div>
+      <div class="stat-value" id="d-week-spend">$0</div>
+      <div class="stat-sub" id="d-week-sub">last 7 days</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-title">Net Progress Toward Goal</div>
+    <div class="progress-wrap" style="margin-bottom:0;">
+      <div class="progress-label">
+        <span id="prog-label-left">$0 net</span>
+        <span id="prog-label-right">Goal: $0</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="prog-fill" style="width:0%;background:var(--green);"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="card">
+      <div class="card-title">Monthly Trend</div>
+      <canvas id="dashChart" height="160"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Budget Status This Month</div>
+      <div id="dash-status" style="padding:20px 0;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--mid);">—</div>
+        <div style="font-size:10px;color:var(--mid);margin-top:8px;">Enter data to see status</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Insight Card -->
+  <div class="card" style="margin-top:16px;">
+    <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>AI Daily Insight</span>
+      <button class="btn btn-ghost" style="padding:3px 10px;font-size:9px;" onclick="runDailyAnalysis()">↻ Refresh</button>
+    </div>
+    <div id="ai-insight-text" style="font-size:11px;color:var(--mid);line-height:1.7;">
+      Click Refresh to get today's AI analysis of your finances.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ BUDGET ══════════════════════ -->
+<div class="page" id="page-budget">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Budget</div>
+      <div class="page-sub">2026 — Bi-weekly checks</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:10px;color:var(--mid);">Goal $</span>
+      <input id="goal-input" type="number" value="1600" style="background:#161616;border:1px solid #374151;color:var(--white);padding:6px 10px;border-radius:6px;font-family:'DM Mono',monospace;font-size:11px;width:100px;outline:none;" onchange="saveAndRefresh()">
+    </div>
+  </div>
+  <!-- This Month Stats -->
+  <div class="stat-grid" style="margin-bottom:16px;" id="budget-month-stats">
+    <div class="stat-card">
+      <div class="stat-label">This Month Income</div>
+      <div class="stat-value" id="bm-income" style="font-size:18px;">$0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">This Month Expenses</div>
+      <div class="stat-value" id="bm-expenses" style="font-size:18px;">$0</div>
+    </div>
+    <div class="stat-card" id="bm-net-card">
+      <div class="stat-label">This Month Net</div>
+      <div class="stat-value" id="bm-net" style="font-size:18px;">$0</div>
+    </div>
+    <div class="stat-card" id="bm-status-card">
+      <div class="stat-label">This Month Status</div>
+      <div class="stat-value" id="bm-status" style="font-size:18px;">—</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table id="budget-table">
+        <thead>
+          <tr>
+            <th>Pay Date</th><th>Check $</th><th>Expenses</th>
+            <th>When &amp; Where</th><th>NET</th>
+            <th colspan="1">Month</th><th>Budget Status</th>
+            <th>YTD</th><th>Goal %</th>
+          </tr>
+        </thead>
+        <tbody id="budget-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Quick Add — below the table -->
+  <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <!-- Add Check -->
+    <div style="background:#111;border:1px solid #1d1d1d;border-radius:10px;padding:16px;">
+      <div style="font-size:9px;color:#444;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:12px;">+ Log Paycheck</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <label style="font-size:8px;color:#444;text-transform:uppercase;letter-spacing:.08em;">Amount</label>
+          <input id="qc-amount" type="number" min="0.01" step="0.01" placeholder="0.00" style="background:#0d0d0d;border:1px solid #252525;color:#ccc;padding:7px 10px;border-radius:7px;font-family:'DM Mono',monospace;font-size:11px;width:100px;outline:none;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <label style="font-size:8px;color:#444;text-transform:uppercase;letter-spacing:.08em;">Pay Date</label>
+          <input id="qc-date" type="date" style="background:#0d0d0d;border:1px solid #252525;color:#ccc;padding:7px 10px;border-radius:7px;font-family:'DM Mono',monospace;font-size:11px;outline:none;">
+        </div>
+        <button onclick="quickAddCheck()" style="background:linear-gradient(135deg,#1e3a2f,#14532d);border:1px solid #22c55e33;color:#22c55e;padding:7px 16px;border-radius:7px;font-size:9px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;">Log Check</button>
+      </div>
+    </div>
+    <!-- Add Expense -->
+    <div style="background:#111;border:1px solid #1d1d1d;border-radius:10px;padding:16px;">
+      <div style="font-size:9px;color:#444;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:12px;">+ Log Expense</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <label style="font-size:8px;color:#444;text-transform:uppercase;letter-spacing:.08em;">Amount</label>
+          <input id="qa-amount" type="number" min="0.01" step="0.01" placeholder="0.00" style="background:#0d0d0d;border:1px solid #252525;color:#ccc;padding:7px 10px;border-radius:7px;font-family:'DM Mono',monospace;font-size:11px;width:90px;outline:none;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <label style="font-size:8px;color:#444;text-transform:uppercase;letter-spacing:.08em;">Description</label>
+          <input id="qa-desc" type="text" placeholder="Groceries" style="background:#0d0d0d;border:1px solid #252525;color:#ccc;padding:7px 10px;border-radius:7px;font-family:'DM Mono',monospace;font-size:11px;width:140px;outline:none;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <label style="font-size:8px;color:#444;text-transform:uppercase;letter-spacing:.08em;">Category</label>
+          <select id="qa-cat" style="background:#0d0d0d;border:1px solid #252525;color:#ccc;padding:7px 10px;border-radius:7px;font-family:'DM Mono',monospace;font-size:11px;outline:none;cursor:pointer;">
+            <option value="">— Cat —</option>
+            <option>Food</option><option>Gas</option><option>Entertainment</option>
+            <option>Shopping</option><option>Health</option><option>Bills</option>
+            <option>Subscriptions</option><option>Savings</option><option>Other</option>
+          </select>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <label style="font-size:8px;color:#444;text-transform:uppercase;letter-spacing:.08em;">Date</label>
+          <input id="qa-date" type="date" style="background:#0d0d0d;border:1px solid #252525;color:#ccc;padding:7px 10px;border-radius:7px;font-family:'DM Mono',monospace;font-size:11px;outline:none;">
+        </div>
+        <button onclick="quickAddExpense()" style="background:#1a1a1a;border:1px solid #2a2a2a;color:#888;padding:7px 14px;border-radius:7px;font-size:9px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ CHARTS ══════════════════════ -->
+<div class="page" id="page-charts">
+  <div class="page-header">
+    <div class="page-title">Charts</div>
+  </div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Income vs Expenses by Month</div>
+      <canvas id="barChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Net Trend</div>
+      <canvas id="lineChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Expense Breakdown</div>
+      <canvas id="donutChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">YTD Cumulative Income</div>
+      <canvas id="areaChart" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ GOALS ══════════════════════ -->
+<div class="page" id="page-goals">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Goals</div>
+      <div class="page-sub">Track savings targets and stay on pace</div>
+    </div>
+    <button class="btn btn-primary" onclick="showNewGoalForm()">+ New Goal</button>
+  </div>
+
+  <!-- Monthly progress chart -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">Monthly Net Progress</div>
+    <canvas id="goalChart" height="140"></canvas>
+  </div>
+
+  <!-- Summary strip -->
+  <div class="goals-summary" id="goals-summary"></div>
+
+  <!-- Goals list -->
+  <div class="goals-list" id="goals-list"></div>
+
+  <!-- New goal inline form (hidden by default) -->
+  <div class="new-goal-form" id="new-goal-form" style="display:none;">
+    <div class="new-goal-form-title">New Goal</div>
+    <div class="new-goal-fields">
+      <input class="new-goal-input" id="ng-name" placeholder="Goal name (e.g. Gaming PC)" type="text">
+      <input class="new-goal-input" id="ng-target" placeholder="Target $" type="number" min="1">
+      <input class="new-goal-input" id="ng-date" placeholder="Target date" type="date">
+    </div>
+    <div style="margin-bottom:12px;">
+      <input class="new-goal-input" id="ng-note" placeholder="Short note (optional)" type="text" style="width:100%;">
+    </div>
+    <div class="new-goal-btns">
+      <button class="new-goal-cancel" onclick="hideNewGoalForm()">Cancel</button>
+      <button class="new-goal-submit" onclick="submitNewGoal()">Add Goal</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ HOURS CALC ══════════════════════ -->
+<div class="page" id="page-hours">
+  <div class="page-header">
+    <div class="page-title">Hours Calculator</div>
+    <div class="page-sub">Enter start/end as numbers (e.g. 11, 3 for 11am–3pm). PM auto-detected.</div>
+  </div>
+  <div class="calc-grid">
+    <!-- Shift Log — premium table -->
+    <div>
+      <div class="shift-table-wrap">
+        <div class="shift-table-head">
+          <span class="shift-th">Date</span>
+          <span class="shift-th">Start</span>
+          <span class="shift-th">End</span>
+          <span class="shift-th">Hours</span>
+          <span class="shift-th">Pay</span>
+          <span class="shift-th">Note</span>
+          <span class="shift-th"></span>
+        </div>
+        <div id="calc-body"></div>
+        <div class="add-shift-row" onclick="addShiftRow()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Add Shift
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Panel -->
+    <div>
+      <div class="calc-summary-box">
+        <div class="calc-summary-title">Earnings Summary</div>
+
+        <!-- Hero Stat: Total Pay -->
+        <div class="calc-hero-stat">
+          <div class="calc-hero-label">Total Pay This Period</div>
+          <div class="calc-hero-value" id="total-pay">$0.00</div>
+          <div class="calc-hero-hours"><span id="total-hours">0.00</span> hours logged</div>
+        </div>
+
+        <!-- Rate input -->
+        <div class="calc-stat">
+          <div class="calc-stat-label">Hourly Rate</div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="color:#555;font-size:12px;">$</span>
+            <input id="hourly-rate" type="number" value="10.75" step="0.25" class="calc-rate-input" onchange="recalcShifts()">
+          </div>
+        </div>
+
+        <!-- Extra stats injected here -->
+        <div id="calc-extra-stats"></div>
+
+        <!-- Goal progress bar -->
+        <div style="margin-top:6px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;">Goal Progress</span>
+            <span style="font-size:8px;color:#555;" id="goal-pct-label">0%</span>
+          </div>
+          <div class="calc-goal-bar"><div class="calc-goal-bar-fill" id="goal-bar-fill" style="width:0%;"></div></div>
+        </div>
+
+        <!-- Send to Budget CTA -->
+        <div class="calc-send-btn" onclick="sendPayToBudget()">
+          → Send Pay to Budget
+        </div>
+
+        <div style="font-size:8px;color:#333;text-align:center;margin-top:6px;letter-spacing:0.04em;">Routes to current pay period automatically</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ BUDGET DECIDER ══════════════════════ -->
+<div class="page" id="page-decider">
+  <div class="page-header">
+    <div class="page-title">Budget Decider</div>
+    <div class="page-sub">Can you afford your bills? 2× income rule.</div>
+  </div>
+  <div id="verdict-box" class="verdict-box covered">
+    <span id="verdict-text">Enter your bills to see verdict</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+    <div class="card">
+      <div class="card-title">Monthly Income (from Budget)</div>
+      <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:var(--green);" id="dec-income">$0</div>
+      <div style="font-size:9px;color:var(--mid);margin-top:4px;">avg monthly check income</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Total Fixed Bills</div>
+      <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:var(--red);" id="dec-bills">$0</div>
+      <div style="font-size:9px;color:var(--mid);margin-top:4px;">need 2× = <span id="dec-need">$0</span></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-title" style="display:flex;justify-content:space-between;">
+      <span>Fixed Monthly Bills</span>
+      <button class="btn btn-ghost" onclick="showAddBillForm()" style="padding:4px 10px;font-size:9px;">+ Add Bill</button>
+    </div>
+    <div id="bills-list" class="bills-grid"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Savings Guidance</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="savings-guide"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ AI ADVISER — PREMIUM ══════════════════════ -->
+<div class="page" id="page-ai">
+  <div class="ai-wrap" id="ai-wrap">
+    <div class="chat-box">
+
+      <!-- Premium Header -->
+      <div class="chat-header">
+        <!-- Clickable profile avatar -->
+        <div class="ai-profile-btn" id="ai-profile-btn" onclick="toggleAIProfile(event)">
+          <div class="ai-avatar" id="ai-avatar">CL</div>
+          <!-- Profile popover -->
+          <div class="ai-profile-popover" id="ai-profile-popover">
+            <div class="popover-title">Adviser Options</div>
+            <div class="popover-action" onclick="quickAsk('How am I doing this month? Give me a full financial report.');closeAIProfile();">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+              Monthly report
+            </div>
+            <div class="popover-action" onclick="quickAsk('Rate my finances from 1-10 and give specific advice for each area.');closeAIProfile();">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              Rate my finances
+            </div>
+            <div class="popover-action" onclick="quickAsk('Build me a realistic savings plan to hit my goal as fast as possible.');closeAIProfile();">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+              Savings plan
+            </div>
+            <div class="popover-action" onclick="clearChat();closeAIProfile();">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path></svg>
+              Clear conversation
+            </div>
+          </div>
+        </div>
+
+        <!-- Name & status -->
+        <div style="flex:1;">
+          <div class="ai-name-label" id="ai-display-name">Financial Adviser</div>
+          <div class="ai-sub-label">
+            <span class="ai-status-pulse"></span>
+            <span id="ai-page-sub">Active · claude-3-5-haiku · Real-time analysis</span>
+          </div>
+        </div>
+
+        <!-- Header actions: snapshot toggle + analyze -->
+        <div class="ai-header-actions">
+          <button class="ai-icon-btn" id="snapshot-toggle-btn" onclick="toggleContextPanel()" title="Data snapshot">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
+          </button>
+          <button class="ai-icon-btn" onclick="runAnalyzeSpending()" title="Analyze spending">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="chat-messages" id="chat-messages">
+        <div class="msg ai">
+          <div class="msg-bubble" id="welcome-msg">Initializing financial engine...</div>
+          <div class="msg-time" id="welcome-time"></div>
+        </div>
+      </div>
+
+      <!-- Input Area with "+" tools popup -->
+      <div class="chat-input-area">
+        <div class="chat-input-row">
+          <!-- "+" tools button -->
+          <div style="position:relative;">
+            <div class="chat-plus-btn" id="chat-plus-btn" onclick="toggleToolsPopup(event)" title="Tools">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </div>
+            <!-- Tools popup -->
+            <div class="tools-popup" id="tools-popup">
+              <div class="tools-popup-title">Quick Actions</div>
+              <div class="tools-popup-grid">
+                <div class="tool-chip-btn" onclick="quickAskAndClose('Add an expense for me')">+ Expense</div>
+                <div class="tool-chip-btn" onclick="quickAskAndClose('Update my income for this period')">+ Income</div>
+                <div class="tool-chip-btn" onclick="quickAskAndClose('Analyze my spending this month and give specific feedback')">Analyze</div>
+                <div class="tool-chip-btn" onclick="quickAskAndClose('Rate my finances from 1 to 10 and explain each area')">Rate Me</div>
+                <div class="tool-chip-btn" onclick="quickAskAndClose('Give me a step-by-step savings plan to hit my goal faster')">Savings Plan</div>
+                <div class="tool-chip-btn" onclick="quickAskAndClose('What specific expenses should I cut to save more?')">Cut Costs</div>
+                <div class="tool-chip-btn" onclick="quickAskAndClose('How many hours do I need to work to hit my savings goal?')">Hours to Goal</div>
+                <div class="tool-chip-btn" onclick="quickAskAndClose('Give me a realistic weekly budget by category')">Weekly Budget</div>
+                <div class="tool-chip-btn" onclick="closeToolsPopup();triggerReceiptUpload()">Receipt Scan</div>
+                <div class="tool-chip-btn" onclick="closeToolsPopup();triggerCSVUpload()">Import CSV</div>
+                <div class="tool-chip-btn" onclick="quickAskAndClose('What is my biggest financial risk right now?')">Risk Check</div>
+                <div class="tool-chip-btn" onclick="quickAskAndClose('Give me a financial tip specific to my exact numbers')">Quick Tip</div>
+              </div>
+            </div>
+          </div>
+
+          <textarea class="chat-input" id="chat-input" placeholder="Ask your financial adviser anything..." rows="1" onkeydown="if(event.key==='Enter'&amp;&amp;!event.shiftKey){event.preventDefault();sendMessage();}else{autoGrowChat(this);}" oninput="autoGrowChat(this)"></textarea>
+          <button class="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+        <div class="chat-hint">Shift+Enter for new line · + for tools</div>
+      </div>
+
+      <!-- Hidden file inputs -->
+      <input type="file" id="csv-ai-upload" accept=".csv" style="display:none" onchange="parseCSVForAI(this)">
+      <input type="file" id="inline-sheet-file" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleSheetImportInline(this)">
+      <input type="file" id="receipt-input" accept="image/*" style="display:none;" onchange="handleReceiptUpload(event)">
+    </div>
+
+    <!-- Collapsible Context Panel -->
+    <div class="ai-context" id="ai-context-panel" style="display:none;">
+      <div style="font-size:9px;color:#333;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:8px;">Data Snapshot</div>
+
+      <div class="context-section">
+        <div class="context-label">This Month</div>
+        <div class="context-item"><span class="context-key">Income</span><span class="context-val" id="ctx-month-income">$0</span></div>
+        <div class="context-item"><span class="context-key">Expenses</span><span class="context-val" id="ctx-month-exp">$0</span></div>
+        <div class="context-item"><span class="context-key">Net</span><span class="context-val" id="ctx-month-net">$0</span></div>
+      </div>
+
+      <div class="context-section">
+        <div class="context-label">YTD Budget</div>
+        <div class="context-item"><span class="context-key">Total Income</span><span class="context-val" id="ctx-income">$0</span></div>
+        <div class="context-item"><span class="context-key">Total Expenses</span><span class="context-val" id="ctx-expenses">$0</span></div>
+        <div class="context-item"><span class="context-key">Net</span><span class="context-val" id="ctx-net">$0</span></div>
+      </div>
+
+      <div class="context-section">
+        <div class="context-label">Goals</div>
+        <div class="context-item"><span class="context-key">Primary Goal</span><span class="context-val" id="ctx-goal">$0</span></div>
+        <div class="context-item"><span class="context-key">Progress</span><span class="context-val" id="ctx-goal-pct">0%</span></div>
+      </div>
+
+      <div class="context-section">
+        <div class="context-label">Hours</div>
+        <div class="context-item"><span class="context-key">Hours Logged</span><span class="context-val" id="ctx-hours">0</span></div>
+        <div class="context-item"><span class="context-key">Total Pay</span><span class="context-val" id="ctx-pay">$0</span></div>
+        <div class="context-item"><span class="context-key">Rate</span><span class="context-val" id="ctx-rate">$0/hr</span></div>
+      </div>
+
+      <div class="context-section">
+        <div class="context-label">Bills</div>
+        <div id="ctx-bills"></div>
+      </div>
+
+      <div class="context-label" style="margin-top:4px;">Suggest</div>
+      <div style="display:flex;flex-direction:column;gap:3px;">
+        <div onclick="quickAsk('How am I doing this month? Be specific.')" style="padding:6px 8px;border-radius:6px;font-size:9px;color:#555;cursor:pointer;border:1px solid #1a1a1a;transition:all 0.15s;" onmouseover="this.style.borderColor='#2a2a2a';this.style.color='#888'" onmouseout="this.style.borderColor='#1a1a1a';this.style.color='#555'">This month summary?</div>
+        <div onclick="quickAsk('Am I on track to hit my goal? When will I get there?')" style="padding:6px 8px;border-radius:6px;font-size:9px;color:#555;cursor:pointer;border:1px solid #1a1a1a;transition:all 0.15s;" onmouseover="this.style.borderColor='#2a2a2a';this.style.color='#888'" onmouseout="this.style.borderColor='#1a1a1a';this.style.color='#555'">On track for goal?</div>
+        <div onclick="quickAsk('What should I cut to save more money each month?')" style="padding:6px 8px;border-radius:6px;font-size:9px;color:#555;cursor:pointer;border:1px solid #1a1a1a;transition:all 0.15s;" onmouseover="this.style.borderColor='#2a2a2a';this.style.color='#888'" onmouseout="this.style.borderColor='#1a1a1a';this.style.color='#555'">What to cut?</div>
+        <div onclick="quickAsk('Give me a financial tip based on my exact numbers.')" style="padding:6px 8px;border-radius:6px;font-size:9px;color:#555;cursor:pointer;border:1px solid #1a1a1a;transition:all 0.15s;" onmouseover="this.style.borderColor='#2a2a2a';this.style.color='#888'" onmouseout="this.style.borderColor='#1a1a1a';this.style.color='#555'">Quick tip</div>
+      </div>
+
+      <!-- Scheduled Jobs -->
+      <div class="context-label" style="margin-top:8px;">Scheduled Jobs</div>
+      <div class="scheduled-jobs">
+        <div class="job-row"><span class="job-name">Email scan</span><span class="job-status active" id="job-email-status">4×/day</span></div>
+        <div class="job-row"><span class="job-name">AI analysis</span><span class="job-status active" id="job-analysis-status">1×/day</span></div>
+        <div class="job-row"><span class="job-name">Last run</span><span class="job-status" id="job-last-run">Never</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SETTINGS (MOCKUP REDESIGN) ══════════════════════ -->
+<div class="page" id="page-settings">
+  <div class="page-header">
+    <div class="page-title">Settings</div>
+  </div>
+  <div class="settings-wrap">
+
+    <!-- PROFILE CARD + ACCOUNT ACCORDION -->
+    <div class="profile-card" onclick="toggleAccountExpand()" id="profile-card-toggle">
+      <div class="profile-avatar" id="settings-profile-avatar">D</div>
+      <div class="profile-info">
+        <div class="profile-name" id="settings-profile-name">Dane Fischbach</div>
+        <div class="profile-email" id="settings-profile-email">danefischbach6@gmail.com</div>
+        <div class="profile-badge">OWNER · VERIFIED</div>
+      </div>
+      <div class="chevron" id="profile-card-chevron">›</div>
+    </div>
+
+    <!-- ACCOUNT EXPAND PANEL -->
+    <div class="account-expand" id="account-expand">
+
+      <!-- Personal Info -->
+      <div class="acc-row-wrap">
+        <div class="acc-row-header" onclick="toggleAccordionRow('personal')">
+          <div class="setting-icon icon-dark">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          </div>
+          <div class="setting-label-wrap">
+            <div class="setting-name">Personal Info</div>
+            <div class="setting-sub">Name, age, email &amp; about you</div>
+          </div>
+          <div class="setting-right"><div class="acc-chevron" id="chev-personal">›</div></div>
+        </div>
+        <div class="acc-panel" id="panel-personal">
+          <div class="acc-form">
+            <div class="acc-field-row">
+              <label class="acc-label">Name</label>
+              <input class="acc-input" id="pi-name" value="" placeholder="Your name" oninput="state.userName=this.value;saveLocal();updateSettingsUI();">
+            </div>
+            <div class="acc-field-row">
+              <label class="acc-label">Age</label>
+              <input class="acc-input" id="pi-age" type="number" value="" placeholder="16" oninput="state.userAge=parseInt(this.value)||16;saveLocal();">
+            </div>
+            <div class="acc-field-row">
+              <label class="acc-label">Email</label>
+              <input class="acc-input" id="pi-email" value="" placeholder="—" readonly="" style="opacity:0.4;cursor:default;">
+            </div>
+            <div class="acc-field-col">
+              <label class="acc-label" style="margin-bottom:6px;">About Me &amp; Spending Habits</label>
+              <textarea class="acc-textarea" id="pi-bio" placeholder="Tell the AI a bit about yourself — your job, spending style, financial goals, what you're saving for..." oninput="state.userBio=this.value;saveLocal();"></textarea>
+              <div style="font-size:9px;color:#444;margin-top:4px;">The AI reads this to give you more personal advice.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Password & Security -->
+      <div class="acc-row-wrap">
+        <div class="acc-row-header" onclick="toggleAccordionRow('security')">
+          <div class="setting-icon icon-dark">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0110 0v4"></path></svg>
+          </div>
+          <div class="setting-label-wrap">
+            <div class="setting-name">Password &amp; Security</div>
+            <div class="setting-sub">Change password, sessions</div>
+          </div>
+          <div class="setting-right"><div class="acc-chevron" id="chev-security">›</div></div>
+        </div>
+        <div class="acc-panel" id="panel-security">
+          <div class="acc-form">
+            <div class="acc-field-row">
+              <label class="acc-label">Current Password</label>
+              <input class="acc-input" type="password" id="pw-current" placeholder="••••••••">
+            </div>
+            <div class="acc-field-row">
+              <label class="acc-label">New Password</label>
+              <input class="acc-input" type="password" id="pw-new" placeholder="••••••••">
+            </div>
+            <div class="acc-field-row">
+              <label class="acc-label">Confirm New</label>
+              <input class="acc-input" type="password" id="pw-confirm" placeholder="••••••••">
+            </div>
+            <button class="acc-save-btn" onclick="showToast('Password change coming soon.')">Save Password</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Privacy -->
+      <div class="acc-row-wrap" style="border-bottom:none;">
+        <div class="acc-row-header" onclick="toggleAccordionRow('privacy')">
+          <div class="setting-icon icon-dark">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <div class="setting-label-wrap">
+            <div class="setting-name">Privacy</div>
+            <div class="setting-sub">Data usage, permissions</div>
+          </div>
+          <div class="setting-right"><div class="acc-chevron" id="chev-privacy">›</div></div>
+        </div>
+        <div class="acc-panel" id="panel-privacy">
+          <div class="acc-form">
+            <div class="privacy-toggle-row">
+              <div class="privacy-toggle-info">
+                <div class="privacy-toggle-name">Share anonymous usage data</div>
+                <div class="privacy-toggle-sub">Helps improve the app experience</div>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" id="priv-analytics" onchange="state.privacyAnalytics=this.checked;saveLocal();">
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+            <div class="privacy-toggle-row" style="border-bottom:none;">
+              <div class="privacy-toggle-info">
+                <div class="privacy-toggle-name">AI reads transaction history</div>
+                <div class="privacy-toggle-sub">Gives the AI context on your spending</div>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" id="priv-ai" onchange="state.privacyAI=this.checked;saveLocal();">
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /account-expand -->
+
+    <!-- PROFILE COLOR PICKER -->
+    <div class="settings-group">
+      <div class="group-label">Profile</div>
+      <div style="padding:12px 18px;">
+        <div style="font-size:9px;color:#444;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Avatar Color</div>
+        <div class="avatar-row" style="padding:0;" id="profile-color-row">
+          <div class="avatar-col">
+            <div class="avatar-opt selected" style="background:#7c3aed;" onclick="setProfileColor('#7c3aed',this)"></div>
+            <div class="avatar-opt-label">Violet</div>
+          </div>
+          <div class="avatar-col">
+            <div class="avatar-opt" style="background:#2563eb;" onclick="setProfileColor('#2563eb',this)"></div>
+            <div class="avatar-opt-label">Blue</div>
+          </div>
+          <div class="avatar-col">
+            <div class="avatar-opt" style="background:#059669;" onclick="setProfileColor('#059669',this)"></div>
+            <div class="avatar-opt-label">Green</div>
+          </div>
+          <div class="avatar-col">
+            <div class="avatar-opt" style="background:#ea580c;" onclick="setProfileColor('#ea580c',this)"></div>
+            <div class="avatar-opt-label">Orange</div>
+          </div>
+          <div class="avatar-col">
+            <div class="avatar-opt" style="background:#e11d48;" onclick="setProfileColor('#e11d48',this)"></div>
+            <div class="avatar-opt-label">Rose</div>
+          </div>
+          <div class="avatar-col">
+            <div class="avatar-opt" style="background:#374151;" onclick="setProfileColor('#374151',this)"></div>
+            <div class="avatar-opt-label">Slate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI ADVISER GROUP -->
+    <div class="settings-group">
+      <div class="group-label">AI Adviser</div>
+
+      <!-- AI Preview (no custom logo — placeholder only) -->
+      <div class="ai-preview-head">
+        <div class="ai-big-avatar" id="settings-ai-avatar">CL</div>
+        <div>
+          <div class="ai-preview-name" id="settings-ai-name-display">Claude</div>
+          <div class="ai-preview-role">Your Financial Adviser</div>
+        </div>
+      </div>
+      <div class="ai-bubble" id="settings-ai-bubble">
+        Hey — I'm your AI financial adviser. Ask me anything about your budget, spending, or goals.
+      </div>
+
+      <!-- Avatar color picker -->
+      <div style="padding:4px 18px 4px;">
+        <div style="font-size:9px;color:#444;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Adviser Color</div>
+        <div class="avatar-row" style="padding:0;">
+          <div class="avatar-col">
+            <div class="avatar-opt selected" style="background:#374151;" onclick="setAvatar('#374151',this)"></div>
+            <div class="avatar-opt-label">Slate</div>
+          </div>
+          <div class="avatar-col">
+            <div class="avatar-opt" style="background:#7c3aed;" onclick="setAvatar('#7c3aed',this)"></div>
+            <div class="avatar-opt-label">Violet</div>
+          </div>
+          <div class="avatar-col">
+            <div class="avatar-opt" style="background:#2563eb;" onclick="setAvatar('#2563eb',this)"></div>
+            <div class="avatar-opt-label">Blue</div>
+          </div>
+          <div class="avatar-col">
+            <div class="avatar-opt" style="background:#059669;" onclick="setAvatar('#059669',this)"></div>
+            <div class="avatar-opt-label">Green</div>
+          </div>
+          <div class="avatar-col">
+            <div class="avatar-opt" style="background:#ea580c;" onclick="setAvatar('#ea580c',this)"></div>
+            <div class="avatar-opt-label">Orange</div>
+          </div>
+          <div class="avatar-col">
+            <div class="avatar-opt" style="background:#e11d48;" onclick="setAvatar('#e11d48',this)"></div>
+            <div class="avatar-opt-label">Rose</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personality chips -->
+      <div style="padding:4px 18px 0;">
+        <div style="font-size:9px;color:#444;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Personality</div>
+      </div>
+      <div class="chips" id="personality-chips">
+        <div class="chip selected" onclick="selectPersonalityChip('professional',this)">Professional &amp; Direct</div>
+        <div class="chip" onclick="selectPersonalityChip('friendly',this)">Friendly &amp; Encouraging</div>
+        <div class="chip" onclick="selectPersonalityChip('strict',this)">Strict &amp; No-Nonsense</div>
+        <div class="chip" onclick="selectPersonalityChip('mentor',this)">Mentor &amp; Coach</div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-icon icon-dark">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">AI Name</div>
+          <div class="setting-sub" id="settings-ai-name-sub">Claude</div>
+        </div>
+        <div class="setting-right">
+          <input class="setting-input-inline" id="ai-name-input" value="Claude" oninput="updateAiName(this.value)">
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-icon icon-dark">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"></path></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">AI Focus</div>
+          <div class="setting-sub">What the AI prioritizes</div>
+        </div>
+        <div class="setting-right">
+          <select id="ai-focus" onchange="state.aiFocus=this.value;saveSettings();" style="background:#0d0d0d;border:1px solid #2a2a2a;color:var(--off);font-family:'DM Mono',monospace;font-size:10px;padding:4px 8px;border-radius:6px;outline:none;">
+            <option value="balanced">Balanced</option>
+            <option value="saving">Saving Money</option>
+            <option value="spending">Spending Habits</option>
+            <option value="goals">Hitting Goals</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="setting-row" onclick="showToast('Custom rules editor — coming soon.')">
+        <div class="setting-icon icon-dark">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Custom Rules</div>
+          <div class="setting-sub">Extra instructions for your adviser</div>
+        </div>
+        <div class="setting-right"><div class="setting-chevron">›</div></div>
+      </div>
+    </div>
+
+    <!-- APP GROUP -->
+    <div class="settings-group">
+      <div class="group-label">App</div>
+      <div class="setting-row">
+        <div class="setting-icon icon-dark">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Your Name</div>
+          <div class="setting-sub">Used in AI greetings</div>
+        </div>
+        <div class="setting-right">
+          <input class="setting-input-inline" id="user-name" placeholder="Dane" onchange="state.userName=this.value;saveSettings();">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-icon icon-dark">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Budget Goal</div>
+          <div class="setting-sub">Annual savings target</div>
+        </div>
+        <div class="setting-right">
+          <input class="setting-input-inline" type="number" id="goal-setting" value="1600" onchange="syncGoal()">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-icon icon-dark">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Hourly Rate</div>
+          <div class="setting-sub">Used in hours calculator</div>
+        </div>
+        <div class="setting-right">
+          <input class="setting-input-inline" type="number" id="rate-setting" value="10.75" step="0.25" onchange="syncRate()">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-icon icon-dark">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 01-3.46 0"></path></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Budget Alerts</div>
+          <div class="setting-sub">Warn when expenses are high</div>
+        </div>
+        <div class="setting-right">
+          <div class="toggle on" id="alerts-toggle" onclick="toggleAlerts(this)"></div>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-icon icon-dark">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Auto Sync</div>
+          <div class="setting-sub" id="last-sync-sub">Sync to Supabase</div>
+        </div>
+        <div class="setting-right">
+          <div class="toggle on" id="sync-toggle" onclick="toggleAutoSync(this)"></div>
+        </div>
+      </div>
+
+      <!-- Anthropic API Key -->
+      <div class="setting-row">
+        <div class="setting-icon icon-dark">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">AI API Key</div>
+          <div class="setting-sub">Anthropic / Claude API key</div>
+
+        </div>
+        <div class="setting-right">
+          <input type="password" class="setting-input-inline" id="anthropic-key" placeholder="sk-ant-..." onchange="state.anthropicKey=this.value;saveSettings();">
+        </div>
+      </div>
+    </div>
+
+    <!-- CONNECTED TOOLS GROUP -->
+    <div class="settings-group">
+      <div class="group-label">Connected Tools</div>
+
+      <div class="setting-row">
+        <div class="setting-icon" style="background:rgba(59,130,246,0.1);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Email Scanning</div>
+          <div class="setting-sub">Gmail / receipt scanning</div>
+        </div>
+        <div class="setting-right">
+          <div class="toggle" id="settings-toggle-email" onclick="toggleSettingsTool('email',this)"></div>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-icon" style="background:rgba(234,179,8,0.1);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Cash App</div>
+          <div class="setting-sub">Transaction proxy scan</div>
+          <!--
+            CASH APP INTEGRATION:
+            ────────────────────────────────────────────────
+            Cash App has no public API. Options:
+            1. Proxy scan: User exports CSV from Cash App → upload here
+               → parse and import transactions automatically
+            2. Plaid integration (requires Plaid account + $):
+               Use Plaid Link to connect bank/Cash App
+               Fetch transactions: /transactions/get endpoint
+            3. Manual: User pastes transaction data into chat
+               → AI parses with categorizeTransaction()
+            ────────────────────────────────────────────────
+          -->
+        </div>
+        <div class="setting-right">
+          <div class="toggle" id="settings-toggle-cashapp" onclick="toggleSettingsTool('cashapp',this)"></div>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-icon" style="background:rgba(66,133,244,0.1);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4285f4" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"></path></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Google Account</div>
+          <div class="setting-sub">Gmail &amp; Sheets integration</div>
+        </div>
+        <div class="setting-right">
+          <div class="toggle" id="settings-toggle-google" onclick="toggleSettingsTool('google',this)"></div>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-icon" style="background:rgba(34,197,94,0.1);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="3" x2="12" y2="5"></line><line x1="12" y1="19" x2="12" y2="21"></line><line x1="3" y1="12" x2="5" y2="12"></line><line x1="19" y1="12" x2="21" y2="12"></line></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Receipt Scanner</div>
+          <div class="setting-sub">AI-powered image extraction</div>
+        </div>
+        <div class="setting-right">
+          <div class="toggle on" id="settings-toggle-receipt" onclick="toggleSettingsTool('receipt',this)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA GROUP -->
+    <div class="settings-group">
+      <div class="group-label">Data</div>
+      <div class="setting-row" onclick="exportData()">
+        <div class="setting-icon icon-dark">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Export Data</div>
+          <div class="setting-sub">Download as JSON</div>
+        </div>
+        <div class="setting-right"><div class="setting-chevron">›</div></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-icon icon-dark">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Import Data</div>
+          <div class="setting-sub">Restore from JSON</div>
+        </div>
+        <div class="setting-right">
+          <label style="cursor:pointer;color:#555;font-size:13px;">›
+            <input type="file" accept=".json" onchange="importData(event)" style="display:none">
+          </label>
+        </div>
+      </div>
+      <div class="setting-row" onclick="syncNow()">
+        <div class="setting-icon icon-dark">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Sync Now</div>
+          <div class="setting-sub" id="last-sync-time">Last synced: Never</div>
+        </div>
+        <div class="setting-right"><div class="setting-chevron">›</div></div>
+      </div>
+      <div class="setting-row destructive" onclick="clearData()">
+        <div class="setting-icon" style="background:rgba(239,68,68,0.08);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"></path></svg>
+        </div>
+        <div class="setting-label-wrap">
+          <div class="setting-name">Clear All Data</div>
+        </div>
+        <div class="setting-right"><div class="setting-chevron" style="color:#333;">›</div></div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="settings-group">
+      <div class="group-label">About</div>
+      <div class="setting-row">
+        <div class="setting-label-wrap"><div class="setting-name">Version</div></div>
+        <div class="setting-right"><div class="setting-value">v1.27.0</div></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label-wrap"><div class="setting-name">Build</div></div>
+        <div class="setting-right"><div class="setting-value">STCK Eightfigures OS</div></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label-wrap"><div class="setting-name">Backend</div></div>
+        <div class="setting-right"><div class="setting-value">Supabase · Railway</div></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label-wrap"><div class="setting-name">Frontend</div></div>
+        <div class="setting-right"><div class="setting-value">Vercel</div></div>
+      </div>
+    </div>
+
+    <div style="height:40px;"></div>
+  </div>
+</div>
+
+</main>
+
+<!-- MOBILE BOTTOM NAV (hidden on tablet/desktop via CSS) -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bottom-nav-item active" id="bnav-dashboard" onclick="showPage('dashboard')">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
+    <span>Dash</span>
+  </button>
+  <button class="bottom-nav-item" id="bnav-budget" onclick="showPage('budget')">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 3h18v18H3z"></path><path d="M3 9h18M9 21V9"></path></svg>
+    <span>Budget</span>
+  </button>
+  <button class="bottom-nav-item" id="bnav-goals" onclick="showPage('goals')">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>
+    <span>Goals</span>
+  </button>
+  <button class="bottom-nav-item" id="bnav-ai" onclick="showPage('ai')">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path></svg>
+    <span>AI</span>
+  </button>
+  <button class="bottom-nav-item" id="bnav-more" onclick="toggleMobileMore()">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>
+    <span>More</span>
+  </button>
+</nav>
+
+<!-- MOBILE "MORE" SHEET (Charts, Hours, Decider, Settings) -->
+<div id="mobile-more-sheet" class="more-sheet">
+  <div class="more-sheet-grid">
+    <button class="more-sheet-btn border-r border-b" id="bnav-charts" onclick="showPage('charts');toggleMobileMore(false);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+      Charts
+    </button>
+    <button class="more-sheet-btn border-b" id="bnav-hours" onclick="showPage('hours');toggleMobileMore(false);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      Hours
+    </button>
+    <button class="more-sheet-btn border-r" id="bnav-decider" onclick="showPage('decider');toggleMobileMore(false);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg>
+      Decider
+    </button>
+    <button class="more-sheet-btn" id="bnav-settings" onclick="showPage('settings');toggleMobileMore(false);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"></path></svg>
+      Settings
+    </button>
+  </div>
+</div>
+
+</div><!-- end app-wrap -->
+
+
+
+<script>
+window.addEventListener('DOMContentLoaded', function(){
+  // Belt-and-suspenders: if launchApp exists and we have a session, call it.
+  setTimeout(function(){
+    try{
+      if(typeof launchApp === 'function' && typeof currentUser !== 'undefined'){
+        if(!currentUser){
+          var s = JSON.parse(localStorage.getItem('stck_session')||'null');
+          if(s && s.email){
+            currentUser = {email:s.email, name:s.name||'You', isOwner:false, aiMsgCount:0};
+          }
+        }
+        if(currentUser){
+          if(typeof loadLocal==='function') loadLocal();
+          launchApp();
+        }
+      }
+    }catch(e){}
+  }, 0);
+});
+</script></body></html>

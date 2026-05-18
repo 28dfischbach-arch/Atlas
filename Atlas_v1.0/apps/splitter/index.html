@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTML Tool — Split &amp; Combine</title>
+  <script src="../../vendor/jszip.min.js"></script>
+  
+  
+  <link rel="stylesheet" href="css/main.css?v=4">
+<style>#__subapp-back__{display:none!important}</style></head>
+<body>
+
+<!-- LANDING -->
+<div id="landing">
+  <div>
+    <div class="land-brand" style="justify-content:center;margin-bottom:7px">
+      <div class="land-icon"><svg viewBox="0 0 20 20"><rect x="2" y="5" width="16" height="2" rx="1"/><rect x="2" y="9" width="10" height="2" rx="1"/><rect x="2" y="13" width="13" height="2" rx="1"/></svg></div>
+      <span class="land-title">HTML Tool</span>
+    </div>
+    <p style="text-align:center;font-size:12px;color:#bbb;">What would you like to do?</p>
+  </div>
+  <div class="land-cards">
+    <div class="land-card" onclick="enterMode('split')">
+      <div class="land-card-name">Split HTML</div>
+      <div class="land-card-desc">Convert a single-file HTML app into a structured folder — separate HTML, CSS, JS, and image files. Auto-detects tabs.</div>
+    </div>
+    <div class="land-card" onclick="enterMode('combine')">
+      <div class="land-card-name">Combine to HTML</div>
+      <div class="land-card-desc">Merge a multi-folder project into one self-contained HTML file. Recursively flattens nested apps and embeds images.</div>
+    </div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="app">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="tb-brand">
+      <div class="tb-icon"><svg viewBox="0 0 20 20"><rect x="2" y="5" width="16" height="2" rx="1"/><rect x="2" y="9" width="10" height="2" rx="1"/><rect x="2" y="13" width="13" height="2" rx="1"/></svg></div>
+      <span class="tb-name">HTML Tool</span>
+    </div>
+    <span class="tb-sep">·</span>
+    <div class="tb-modes">
+      <button class="tb-mode" id="tabSplit"   onclick="enterMode('split')">Split HTML</button>
+      <button class="tb-mode" id="tabCombine" onclick="enterMode('combine')">Combine to HTML</button>
+    </div>
+    <button class="tb-ai" id="aiToggle" onclick="toggleAI()" title="AI assistant">AI</button>
+  </div>
+
+  <!-- Body -->
+  <div class="app-body">
+
+    <!-- Activity Bar -->
+    <div class="act-bar">
+      <button class="act-btn" id="actExplorer" onclick="toggleSB('tree')" title="Explorer">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a2 2 0 012-2h3.172a2 2 0 011.414.586l.828.828A2 2 0 0010.828 4H16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V4z"/></svg>
+      </button>
+      <button class="act-btn" id="actSource" onclick="toggleSB('source')" title="Source file" style="display:none">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      </button>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="sb-head" id="sbHead">Explorer</div>
+      <div id="errPanel" style="display:none" class="err-panel">
+        <div class="err-title">Issues</div>
+        <div id="errList"></div>
+      </div>
+      <div class="sb-body" id="sbBody">
+        <div class="tree-empty" id="sbEmpty">No files yet</div>
+        <div id="treeEl" style="display:none" class="tree-wrap"></div>
+        <div id="srcEl"  style="display:none" class="src-view"></div>
+      </div>
+      <div class="sb-foot" id="sbFoot" style="display:none">
+        <button class="btn btn-p btn-sm" id="dlZip"   onclick="downloadZip()"      style="display:none">Download ZIP</button>
+        <button class="btn btn-o btn-sm" id="rstSplit" onclick="resetSplit()"      style="display:none">New</button>
+        <button class="btn btn-p btn-sm" id="dlHtml"  onclick="downloadCombined()" style="display:none">Download HTML</button>
+        <button class="btn btn-o btn-sm" id="rstComb" onclick="resetCombine()"     style="display:none">New</button>
+      </div>
+    </div>
+
+    <!-- Main Panel -->
+    <div class="main-panel">
+
+      <!-- SPLIT: input -->
+      <div id="splitIn" class="input-screen" style="display:none">
+        <div class="input-card">
+          <div class="ic-title">Split HTML</div>
+          <div class="ic-desc">Upload or paste a single-file HTML app. I'll auto-detect tabs and let you split each one as its own sub-app folder.</div>
+          <div class="ic-upload-row">
+            <label class="upload-lbl">
+              Upload .html file(s)
+              <input type="file" accept=".html,.htm" multiple onchange="onFileUp(event)">
+            </label>
+            <span class="upload-fn" id="upName">—</span>
+          </div>
+          <textarea class="big-ta" id="srcTA" placeholder="…or paste your full HTML source code here" oninput="onTA()"></textarea>
+
+          <div id="tabsCard" class="tabs-card" style="display:none">
+            <div class="tabs-card-head">
+              <span class="tabs-card-title">Detected tabs / embedded apps</span>
+              <span class="badge" id="tabsCount">0</span>
+            </div>
+            <div class="tabs-card-desc">For each tab: tick to split it into its own sub-app folder under <span class="mono">apps/</span>, and optionally upload a separate HTML file for it.</div>
+            <div id="tabsList"></div>
+          </div>
+
+          <div class="ic-actions">
+            <button class="btn btn-p" onclick="runSplit()">Split into files</button>
+            <span class="char-ct" id="charCt">0 chars</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPLIT: editor + preview -->
+      <div id="splitEd" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+        <div class="ed-bar">
+          <span class="ed-fname ph" id="edFname">Select a file from the explorer</span>
+          <span class="badge" id="edKind" style="display:none"></span>
+          <span class="badge" id="edIssues" style="display:none"></span>
+          <div class="ed-acts">
+            <button class="btn btn-o btn-sm prev-toggle" id="prevBtn" onclick="togglePreview()">Preview</button>
+          </div>
+        </div>
+        <div class="ed-split" id="edSplit">
+          <div class="ed-body">
+            <div class="ed-empty" id="edEmpty">Select a file to view its contents</div>
+            <div class="code-wrap" id="cwrap" style="display:none">
+              <div class="ln" id="lnums"></div>
+              <div class="code" id="ccode"></div>
+            </div>
+          </div>
+          <div class="prev-body" id="prevPane">
+            <iframe id="prevFrame" sandbox="allow-scripts" title="Live preview"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMBINE: input -->
+      <div id="combIn" class="input-screen" style="display:none">
+        <div class="input-card">
+          <div class="ic-title">Combine to HTML</div>
+          <div class="ic-desc">Upload a ZIP or folder of HTML, CSS, JS, and image files. Sub-apps under <span class="mono">apps/</span> are recursively flattened into the main file. Images are embedded as base64.</div>
+          <div class="drop-zone" id="dz"
+            onclick="document.getElementById('zipIn').click()"
+            ondragover="dzOver(event)" ondrop="dzDrop(event)"
+            ondragleave="this.classList.remove('dg')">
+            <div class="dz-title">Drop your ZIP here</div>
+            <div class="dz-sub">or click to browse</div>
+            <button class="btn btn-o" onclick="event.stopPropagation();document.getElementById('zipIn').click()">Browse ZIP</button>
+            <input type="file" id="zipIn" accept=".zip" style="display:none" onchange="onZipUp(event)">
+          </div>
+          <div id="imgPrompt" class="img-prompt" style="display:none">
+            <div class="img-prompt-title">Some images were not found in the ZIP</div>
+            <ul class="img-prompt-list" id="missingList"></ul>
+            <label class="upload-lbl" style="margin-top:6px">
+              Upload missing images
+              <input type="file" accept="image/*" multiple onchange="onExtraImg(event)">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMBINE: editor -->
+      <div id="combEd" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+        <div class="ed-bar">
+          <span class="ed-fname ph" id="cEdFname">Select a file from the explorer</span>
+          <div class="ed-acts">
+            <button class="btn btn-o btn-sm prev-toggle" id="cMinBtn" onclick="toggleMinify()" title="Minify the combined HTML on download">Minify</button>
+            <button class="btn btn-o btn-sm prev-toggle" id="cPrevBtn" onclick="togglePreview()">Preview</button>
+          </div>
+        </div>
+        <div class="ed-split" id="cEdSplit">
+          <div class="ed-body">
+            <div class="ed-empty" id="cEdEmpty">Select a file to view its contents</div>
+            <div class="code-wrap" id="cCwrap" style="display:none">
+              <div class="ln" id="cLnums"></div>
+              <div class="code" id="cCode"></div>
+            </div>
+          </div>
+          <div class="prev-body" id="cPrevPane">
+            <iframe id="cPrevFrame" sandbox="allow-scripts" title="Combined preview"></iframe>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-panel -->
+
+    <!-- AI Panel -->
+    <aside class="ai-panel" id="aiPanel" style="display:none">
+      <div class="ai-head">
+        <span class="ai-head-title">Assistant</span>
+        <button class="ai-close" onclick="toggleAI()">×</button>
+      </div>
+      <div class="ai-body" id="aiBody"></div>
+      <div class="ai-foot">
+        <input type="text" class="ai-input" id="aiInput" placeholder="Ask about errors, splitting…" onkeydown="if(event.key==='Enter')sendAI()">
+        <button class="btn btn-p btn-sm" onclick="sendAI()">Send</button>
+      </div>
+    </aside>
+
+  </div><!-- /app-body -->
+</div><!-- /app -->
+
+<script src="js/main.js?v=4"></script>
+</body>
+</html>

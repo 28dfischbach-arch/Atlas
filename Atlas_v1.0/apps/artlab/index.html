@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ArtLab · Atlas</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="al-app">
+  <header class="al-topbar">
+    <div class="al-brand">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="3" fill="currentColor" stroke="none"/></svg>
+      ArtLab
+    </div>
+    <div class="al-tb-actions">
+      <button class="al-btn ghost" onclick="newCanvas()">New</button>
+      <button class="al-btn ghost" onclick="document.getElementById('importImg').click()">Open Image</button>
+      <input type="file" id="importImg" accept="image/*" style="display:none" onchange="importImage(event)">
+      <div class="al-tb-sep"></div>
+      <button class="al-btn ghost" onclick="downloadCanvas('png')">Export PNG</button>
+      <button class="al-btn ghost" onclick="downloadCanvas('jpg')">Export JPG</button>
+      <div class="al-tb-sep"></div>
+      <button class="al-btn ghost" onclick="history_undo()" title="Undo (Ctrl+Z)">
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10a7 7 0 107-7"/><path d="M3 4v6h6"/></svg>
+      </button>
+      <button class="al-btn ghost" onclick="history_redo()" title="Redo (Ctrl+Y)">
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 10a7 7 0 11-7-7"/><path d="M17 4v6h-6"/></svg>
+      </button>
+    </div>
+    <div class="al-tb-size" id="canvasInfo">800 × 600</div>
+  </header>
+  <div class="al-body">
+    <aside class="al-toolbar">
+      <div class="al-tools">
+        <button class="al-tool active" data-tool="select" onclick="setTool('select')" title="Select (V)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2l14 8-8 2-2 8z"/></svg></button>
+        <button class="al-tool" data-tool="brush" onclick="setTool('brush')" title="Brush (B)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3l2 2-9 9-3 1 1-3z"/><path d="M5 17c0 1-1 2-2 2s1-2 0-3"/></svg></button>
+        <button class="al-tool" data-tool="spray" onclick="setTool('spray')" title="Spray (A)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="5" cy="10" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="8" cy="13" r="1" fill="currentColor" stroke="none"/><circle cx="11" cy="9" r="1.2" fill="currentColor" stroke="none"/><path d="M13 7v6M13 7h4M13 13h4"/></svg></button>
+        <button class="al-tool" data-tool="eraser" onclick="setTool('eraser')" title="Eraser (E)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 17H6M3.5 13.5l8-8 5 5-6 6"/><path d="M10 4l6 6"/></svg></button>
+        <button class="al-tool" data-tool="fill" onclick="setTool('fill')" title="Fill (G)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c0-2 4-8 7-11l4 4c-3 3-9 7-11 7z"/><circle cx="16" cy="16" r="2" fill="currentColor" stroke="none"/></svg></button>
+        <div class="al-tool-sep"></div>
+        <button class="al-tool" data-tool="rect" onclick="setTool('rect')" title="Rectangle (R)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="5" width="14" height="10" rx="1.5"/></svg></button>
+        <button class="al-tool" data-tool="ellipse" onclick="setTool('ellipse')" title="Ellipse (O)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="10" cy="10" rx="8" ry="6"/></svg></button>
+        <button class="al-tool" data-tool="line" onclick="setTool('line')" title="Line (L)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="17" x2="17" y2="3"/></svg></button>
+        <button class="al-tool" data-tool="arrow" onclick="setTool('arrow')" title="Arrow"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16L16 4M16 4H10M16 4v6"/></svg></button>
+        <button class="al-tool" data-tool="star" onclick="setTool('star')" title="Star"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l2.4 4.9L18 8l-4 3.9 1 5.5L10 15l-5 2.4 1-5.5L2 8l5.6-1.1z"/></svg></button>
+        <button class="al-tool" data-tool="text" onclick="setTool('text')" title="Text (T)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 5h12M10 5v11M7 16h6"/></svg></button>
+        <div class="al-tool-sep"></div>
+        <button class="al-tool" data-tool="eyedrop" onclick="setTool('eyedrop')" title="Eyedropper (I)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3l4 4-9 9-5 1 1-5z"/><path d="M15 5l2 2"/></svg></button>
+      </div>
+      <div class="al-color-section">
+        <div class="al-color-swatches">
+          <div class="al-swatch" style="background:#111113" onclick="setColor('#111113')"></div>
+          <div class="al-swatch" style="background:#ffffff;border:1px solid #ccc" onclick="setColor('#ffffff')"></div>
+          <div class="al-swatch" style="background:#0071e3" onclick="setColor('#0071e3')"></div>
+          <div class="al-swatch" style="background:#e0245e" onclick="setColor('#e0245e')"></div>
+          <div class="al-swatch" style="background:#1ca672" onclick="setColor('#1ca672')"></div>
+          <div class="al-swatch" style="background:#f59e0b" onclick="setColor('#f59e0b')"></div>
+          <div class="al-swatch" style="background:#8b5cf6" onclick="setColor('#8b5cf6')"></div>
+          <div class="al-swatch" style="background:#ef4444" onclick="setColor('#ef4444')"></div>
+          <div class="al-swatch" style="background:#06b6d4" onclick="setColor('#06b6d4')"></div>
+          <div class="al-swatch" style="background:#f97316" onclick="setColor('#f97316')"></div>
+        </div>
+        <label class="al-color-picker-wrap">
+          <div class="al-color-preview" id="colorPreview" style="background:#111113"></div>
+          <input type="color" id="colorPicker" value="#111113" oninput="setColor(this.value)" style="position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;">
+        </label>
+        <div class="al-size-row">
+          <span class="al-size-lbl">Size</span>
+          <input type="range" id="brushSize" min="1" max="80" value="8" oninput="setBrushSize(this.value)" class="al-slider">
+          <span class="al-size-val" id="sizeVal">8</span>
+        </div>
+        <div class="al-opacity-row">
+          <span class="al-size-lbl">Opacity</span>
+          <input type="range" id="brushOpacity" min="1" max="100" value="100" oninput="setOpacity(this.value)" class="al-slider">
+          <span class="al-size-val" id="opacityVal">100</span>
+        </div>
+        <div class="al-blend-row">
+          <span class="al-blend-lbl">Blend mode</span>
+          <select class="al-blend-select" id="blendMode" onchange="setBlendMode(this.value)">
+            <option value="source-over">Normal</option>
+            <option value="multiply">Multiply</option>
+            <option value="screen">Screen</option>
+            <option value="overlay">Overlay</option>
+            <option value="darken">Darken</option>
+            <option value="lighten">Lighten</option>
+            <option value="color-dodge">Dodge</option>
+            <option value="color-burn">Burn</option>
+            <option value="hard-light">Hard Light</option>
+            <option value="difference">Difference</option>
+          </select>
+        </div>
+      </div>
+    </aside>
+    <div class="al-canvas-wrap" id="canvasWrap">
+      <div class="al-canvas-scroller" id="canvasScroller">
+        <div class="al-canvas-bg" id="canvasBg">
+          <canvas id="alCanvas" width="800" height="600"></canvas>
+        </div>
+      </div>
+      <textarea class="al-text-input" id="alTextInput" style="display:none" onblur="commitText()"></textarea>
+    </div>
+    <aside class="al-right-panel">
+      <div class="al-panel-title">Layers</div>
+      <div id="layerList" class="al-layer-list"></div>
+      <div class="al-layer-actions">
+        <button class="al-sm-btn" onclick="addLayer()">+ Layer</button>
+        <button class="al-sm-btn danger" onclick="deleteLayer()">Delete</button>
+        <button class="al-sm-btn" onclick="mergeDown()">Merge ↓</button>
+        <button class="al-sm-btn" onclick="duplicateLayer()">Duplicate</button>
+      </div>
+      <div class="al-panel-sep"></div>
+      <div class="al-panel-title">Filters</div>
+      <div class="al-filter-row">
+        <select class="al-filter-select" id="filterSelect">
+          <option value="">None</option>
+          <option value="grayscale">Grayscale</option>
+          <option value="sepia">Sepia</option>
+          <option value="invert">Invert</option>
+          <option value="blur">Blur</option>
+          <option value="sharpen">Sharpen</option>
+          <option value="brightness+">Brighten</option>
+          <option value="brightness-">Darken</option>
+          <option value="contrast+">More Contrast</option>
+          <option value="saturate+">Saturate</option>
+        </select>
+        <button class="al-sm-btn full" onclick="applyFilter()" style="margin-top:4px">Apply Filter</button>
+      </div>
+      <div class="al-panel-sep"></div>
+      <div class="al-panel-title">Canvas</div>
+      <div class="al-canvas-options">
+        <div class="al-option-row"><span class="al-opt-lbl">W</span><input class="al-opt-input" id="cwWidth" type="number" value="800" min="100" max="4000"></div>
+        <div class="al-option-row"><span class="al-opt-lbl">H</span><input class="al-opt-input" id="cwHeight" type="number" value="600" min="100" max="4000"></div>
+        <button class="al-sm-btn full" onclick="resizeCanvas()">Resize</button>
+        <div class="al-panel-sep"></div>
+        <button class="al-preset-btn" onclick="setPreset(1920,1080)">1920×1080</button>
+        <button class="al-preset-btn" onclick="setPreset(1080,1080)">1080×1080</button>
+        <button class="al-preset-btn" onclick="setPreset(1200,630)">OG Image</button>
+        <button class="al-preset-btn" onclick="setPreset(1080,1920)">Story</button>
+        <button class="al-preset-btn" onclick="setPreset(2560,1440)">2K</button>
+        <button class="al-preset-btn" onclick="setPreset(800,600)">800×600</button>
+        <div class="al-panel-sep"></div>
+        <div class="al-zoom-row">
+          <button class="al-zoom-btn" onclick="setZoom(zoom-0.1)">−</button>
+          <span class="al-zoom-val" id="zoomVal">100%</span>
+          <button class="al-zoom-btn" onclick="setZoom(zoom+0.1)">+</button>
+          <button class="al-zoom-btn" onclick="setZoom(1)" title="Reset zoom">⌂</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+<script src="js/main.js"></script>
+</body>
+</html>

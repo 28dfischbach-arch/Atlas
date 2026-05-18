@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Settings · Atlas</title>
+<style>
+:root{--bg:#f5f5f7;--surface:#fff;--border:#e5e5ea;--text:#111113;--text2:#4b4b53;--text3:#86868b;--text4:#b2b2b8;--good:#1ca672;--danger:#e0245e;--font:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;--r:10px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;overflow-y:auto;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,select,textarea{font-family:inherit;font-size:13px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#d1d1d6;border-radius:8px}
+.page{max-width:700px;margin:0 auto;padding:32px 24px 60px}
+.page-title{font-size:26px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px}
+.page-sub{font-size:13.5px;color:var(--text3);margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+/* Accordion */
+.acc{margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.acc-hd{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none;transition:background .12s}
+.acc-hd:hover{background:#fafafa}
+.acc-icon{width:32px;height:32px;border-radius:8px;background:#f5f5f7;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.acc-icon svg{width:16px;height:16px;color:var(--text3)}
+.acc-info{flex:1}
+.acc-title{font-size:14px;font-weight:700;color:var(--text)}
+.acc-desc{font-size:12px;color:var(--text3);margin-top:1px}
+.acc-badge{padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;flex-shrink:0}
+.badge-ok{background:#d1fae5;color:#065f46}
+.badge-off{background:#f5f5f7;color:var(--text3)}
+.acc-arrow{width:20px;height:20px;color:var(--text4);transition:transform .2s;flex-shrink:0}
+.acc.open .acc-arrow{transform:rotate(90deg)}
+.acc-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}
+.acc.open .acc-body{display:block}
+/* Form elements */
+.fields{display:flex;flex-direction:column;gap:11px;margin-top:14px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lbl{font-size:11.5px;font-weight:500;color:var(--text2)}
+.hint{font-size:11px;color:var(--text4);margin-top:2px;display:block}
+.inp{padding:8px 11px;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--text);outline:none;width:100%;transition:border-color .15s}
+.inp:focus{border-color:#111;box-shadow:0 0 0 3px rgba(0,0,0,.07)}
+.inp.ro{background:#f5f5f7;color:var(--text3);cursor:not-allowed}
+.pw-wrap{position:relative}
+.pw-wrap .inp{padding-right:38px}
+.pw-eye{position:absolute;right:9px;top:50%;transform:translateY(-50%);width:22px;height:22px;display:grid;place-items:center;color:var(--text3);cursor:pointer}
+.pw-eye svg{width:14px;height:14px}
+.actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:14px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .12s;font-family:inherit}
+.btn-primary{background:#111;color:#fff}
+.btn-primary:hover{background:#333}
+.btn-ghost{background:#fff;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:#f5f5f7}
+.btn-danger{color:var(--danger);background:#fff;border:1px solid #ffd0d0}
+.btn-danger:hover{background:#fff5f5}
+.saved{font-size:12px;font-weight:500;color:var(--good)}
+.info-box{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:7px;font-size:12.5px;color:#1e40af;line-height:1.5;margin-top:12px}
+.info-box svg{width:15px;height:15px;flex-shrink:0;margin-top:1px}
+.avatar-row{display:flex;align-items:center;gap:13px;margin-top:14px;margin-bottom:14px}
+.avatar{width:46px;height:46px;border-radius:50%;background:#111;color:#fff;font-size:18px;font-weight:700;display:grid;place-items:center;flex-shrink:0}
+.avatar-name{font-size:15px;font-weight:700}
+.avatar-email{font-size:12px;color:var(--text3);margin-top:2px}
+.storage-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;margin-bottom:14px}
+.storage-item .lbl{margin-bottom:3px}
+.storage-val{font-size:15px;font-weight:700}
+.offline-banner{display:none;align-items:center;gap:8px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:9px 13px;font-size:12.5px;color:#856404;margin-bottom:16px}
+.offline-banner.show{display:flex}
+.offline-banner svg{width:15px;height:15px;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-title">Settings</div>
+  <div class="page-sub">All Atlas app settings in one place — data stays on your device</div>
+
+  <!-- Offline banner -->
+  <div class="offline-banner" id="offlineBanner">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l18 18M16.7 16.7A10 10 0 012 10c0-2.2.7-4.2 1.9-5.9M6.5 4.2A10 10 0 0118 10c0 1.8-.5 3.5-1.3 5"/><circle cx="10" cy="10" r="2"/></svg>
+    You're offline. Settings saved locally and will sync when reconnected.
+  </div>
+
+  <!-- ── PROFILE ── -->
+  <div class="acc open" id="acc-profile">
+    <div class="acc-hd" onclick="toggleAcc('profile')">
+      <div class="acc-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="7" r="3.5"/><path d="M2 18c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+      <div class="acc-info"><div class="acc-title">Profile</div><div class="acc-desc">Your name, email and pay info shared across all apps</div></div>
+      <svg class="acc-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 5l5 5-5 5"/></svg>
+    </div>
+    <div class="acc-body">
+      <div class="avatar-row">
+        <div class="avatar" id="settAv">A</div>
+        <div><div class="avatar-name" id="settAvName">—</div><div class="avatar-email" id="settAvEmail">—</div></div>
+      </div>
+      <div class="fields">
+        <div class="field"><label class="lbl">Full name</label><input id="sName" class="inp" type="text" placeholder="Your name"></div>
+        <div class="field"><label class="lbl">Email <span style="color:var(--text4)">(read-only)</span></label><input id="sEmail" class="inp ro" type="email" readonly></div>
+        <div class="field-row">
+          <div class="field"><label class="lbl">Pay frequency</label>
+            <select id="sFreq" class="inp"><option value="">Select…</option><option value="weekly">Weekly</option><option value="biweekly">Bi-weekly</option><option value="monthly">Monthly</option></select>
+          </div>
+          <div class="field"><label class="lbl">Hourly rate ($)</label><input id="sRate" class="inp" type="number" placeholder="0" min="0" step="0.01"></div>
+        </div>
+      </div>
+      <div class="actions"><button class="btn btn-primary" onclick="saveProfile()">Save profile</button><span class="saved" id="profileSaved"></span></div>
+    </div>
+  </div>
+
+  <!-- ── ADVISORE ── -->
+  <div class="acc" id="acc-advisore">
+    <div class="acc-hd" onclick="toggleAcc('advisore')">
+      <div class="acc-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="8"/><path d="M10 8v4M10 14h.01"/></svg></div>
+      <div class="acc-info"><div class="acc-title">AdvisorE AI</div><div class="acc-desc">Groq API key and model for the AdvisorE side panel</div></div>
+      <span class="acc-badge" id="advBadge">Not configured</span>
+      <svg class="acc-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 5l5 5-5 5"/></svg>
+    </div>
+    <div class="acc-body">
+      <div class="info-box"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="8"/><path d="M10 8v4M10 14h.01"/></svg>Get your free Groq API key at <strong>console.groq.com</strong> — it's fast and free to start.</div>
+      <div class="fields">
+        <div class="field"><label class="lbl">Groq API key</label>
+          <div class="pw-wrap"><input id="advKey" class="inp" type="password" placeholder="gsk_…"><button class="pw-eye" onclick="togglePw('advKey',this)" title="Show/hide"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s3.5-6.5 9-6.5 9 6.5 9 6.5-3.5 6.5-9 6.5S1 10 1 10z"/><circle cx="10" cy="10" r="2.5"/></svg></button></div>
+          <span class="hint">Stored only on your device — never sent to Atlas servers</span>
+        </div>
+        <div class="field"><label class="lbl">AI Model</label>
+          <select id="advModel" class="inp">
+            <optgroup label="Llama (Recommended)">
+              <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout 17B (fast, smart)</option>
+              <option value="llama-3.3-70b-versatile">Llama 3.3 70B (versatile)</option>
+              <option value="llama-3.1-8b-instant">Llama 3.1 8B (instant)</option>
+            </optgroup>
+            <optgroup label="Other">
+              <option value="qwen/qwen3-32b">Qwen 3 32B</option>
+              <option value="openai/gpt-oss-120b">OpenAI OSS 120B</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+      <div class="actions"><button class="btn btn-primary" onclick="saveAdvisorE()">Save AI settings</button><span class="saved" id="advSaved"></span></div>
+    </div>
+  </div>
+
+  <!-- ── SHOPIFY ── -->
+  <div class="acc" id="acc-shopify">
+    <div class="acc-hd" onclick="toggleAcc('shopify')">
+      <div class="acc-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v12a2 2 0 002 2h10a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="19" y2="6"/><path d="M14 10a4 4 0 01-8 0"/></svg></div>
+      <div class="acc-info"><div class="acc-title">Shopify</div><div class="acc-desc">Connect your store — used by Store, Editor, and SiteBuilder</div></div>
+      <span class="acc-badge" id="shopifyBadge">Not connected</span>
+      <svg class="acc-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 5l5 5-5 5"/></svg>
+    </div>
+    <div class="acc-body">
+      <div class="info-box"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="8"/><path d="M10 8v4M10 14h.01"/></svg>In your Shopify Admin → Settings → Apps → Develop apps. Create a private app, enable theme/product/order scopes, and copy the Admin API access token.</div>
+      <div class="fields">
+        <div class="field"><label class="lbl">Store domain</label><input id="shDomain" class="inp" type="text" placeholder="yourstore.myshopify.com"><span class="hint">Without https:// — e.g. mystore.myshopify.com</span></div>
+        <div class="field"><label class="lbl">Admin API access token</label>
+          <div class="pw-wrap"><input id="shToken" class="inp" type="password" placeholder="shpat_xxxxxxxxxxxxxxxx"><button class="pw-eye" onclick="togglePw('shToken',this)" title="Show/hide"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s3.5-6.5 9-6.5 9 6.5 9 6.5-3.5 6.5-9 6.5S1 10 1 10z"/><circle cx="10" cy="10" r="2.5"/></svg></button></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="saveShopify()">Save credentials</button>
+        <button class="btn btn-ghost btn-danger" onclick="clearShopify()">Disconnect</button>
+        <span class="saved" id="shopifySaved"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIL ── -->
+  <div class="acc" id="acc-mail">
+    <div class="acc-hd" onclick="toggleAcc('mail')">
+      <div class="acc-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="4" width="16" height="12" rx="2"/><path d="M2 7l8 5 8-5"/></svg></div>
+      <div class="acc-info"><div class="acc-title">Gmail / Mail</div><div class="acc-desc">Google OAuth credentials to connect Atlas Mail to your Gmail</div></div>
+      <span class="acc-badge" id="gmailBadge">Not connected</span>
+      <svg class="acc-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 5l5 5-5 5"/></svg>
+    </div>
+    <div class="acc-body">
+      <div class="info-box"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="8"/><path d="M10 8v4M10 14h.01"/></svg>Go to <strong>Google Cloud Console → APIs & Services → Credentials</strong>. Create an OAuth 2.0 Client ID (Web), enable the Gmail API, and add your local file path as an authorised redirect URI.</div>
+      <div class="fields">
+        <div class="field"><label class="lbl">Google Client ID</label><input id="gmClientId" class="inp" type="text" placeholder="xxxx.apps.googleusercontent.com"></div>
+        <div class="field"><label class="lbl">Google Client Secret</label>
+          <div class="pw-wrap"><input id="gmSecret" class="inp" type="password" placeholder="GOCSPX-…"><button class="pw-eye" onclick="togglePw('gmSecret',this)" title="Show/hide"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s3.5-6.5 9-6.5 9 6.5 9 6.5-3.5 6.5-9 6.5S1 10 1 10z"/><circle cx="10" cy="10" r="2.5"/></svg></button></div>
+        </div>
+      </div>
+      <div class="actions"><button class="btn btn-primary" onclick="saveGmail()">Save</button><button class="btn btn-ghost" onclick="authorizeGmail()">Authorize Gmail →</button><span class="saved" id="gmailSaved"></span></div>
+    </div>
+  </div>
+
+  <!-- ── EDITOR ── -->
+  <div class="acc" id="acc-editor">
+    <div class="acc-hd" onclick="toggleAcc('editor')">
+      <div class="acc-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M7 6L3 10l4 4M13 6l4 4-4 4M11 4l-2 12"/></svg></div>
+      <div class="acc-info"><div class="acc-title">Editor</div><div class="acc-desc">Code editor theme and behaviour settings</div></div>
+      <svg class="acc-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 5l5 5-5 5"/></svg>
+    </div>
+    <div class="acc-body">
+      <div class="fields">
+        <div class="field"><label class="lbl">Editor theme</label>
+          <select id="editorTheme" class="inp"><option value="vs-dark">Dark (default)</option><option value="vs">Light</option><option value="hc-black">High Contrast</option></select>
+        </div>
+        <div class="field"><label class="lbl">Font size</label>
+          <select id="editorFontSize" class="inp"><option value="12">12px</option><option value="13">13px</option><option value="14" selected>14px (default)</option><option value="15">15px</option><option value="16">16px</option><option value="18">18px</option></select>
+        </div>
+        <div class="field"><label class="lbl">Tab size</label>
+          <select id="editorTabSize" class="inp"><option value="2" selected>2 spaces</option><option value="4">4 spaces</option><option value="tab">Tab</option></select>
+        </div>
+        <div class="field"><label class="lbl">Word wrap</label>
+          <select id="editorWordWrap" class="inp"><option value="off">Off</option><option value="on" selected>On</option><option value="wordWrapColumn">At column</option></select>
+        </div>
+        <div class="field"><label class="lbl">Auto-push Shopify on save</label>
+          <select id="editorAutoPush" class="inp"><option value="on" selected>Enabled (keystroke debounce)</option><option value="off">Disabled (manual save only)</option></select>
+          <span class="hint">Only applies to themes already uploaded to Shopify in the Themes tab</span>
+        </div>
+      </div>
+      <div class="actions"><button class="btn btn-primary" onclick="saveEditor()">Save editor settings</button><span class="saved" id="editorSaved"></span></div>
+    </div>
+  </div>
+
+  <!-- ── SITEBUILDER ── -->
+  <div class="acc" id="acc-sitebuilder">
+    <div class="acc-hd" onclick="toggleAcc('sitebuilder')">
+      <div class="acc-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="4" width="16" height="12" rx="2"/><path d="M2 8h16M6 4v4"/></svg></div>
+      <div class="acc-info"><div class="acc-title">SiteBuilder</div><div class="acc-desc">Theme export defaults and canvas behaviour</div></div>
+      <svg class="acc-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 5l5 5-5 5"/></svg>
+    </div>
+    <div class="acc-body">
+      <div class="fields">
+        <div class="field"><label class="lbl">Default theme name</label><input id="sbThemeName" class="inp" type="text" placeholder="My Atlas Theme"></div>
+        <div class="field"><label class="lbl">Default export format</label>
+          <select id="sbExport" class="inp"><option value="shopify">Shopify Theme (Liquid)</option><option value="html">Plain HTML</option></select>
+        </div>
+        <div class="field"><label class="lbl">Canvas grid</label>
+          <select id="sbGrid" class="inp"><option value="on" selected>Show grid</option><option value="off">Hide grid</option></select>
+        </div>
+      </div>
+      <div class="actions"><button class="btn btn-primary" onclick="saveSiteBuilder()">Save settings</button><span class="saved" id="sbSaved"></span></div>
+    </div>
+  </div>
+
+  <!-- ── CHAT ── -->
+  <div class="acc" id="acc-chat">
+    <div class="acc-hd" onclick="toggleAcc('chat')">
+      <div class="acc-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H8l-4 3v-3a2 2 0 01-1-1.7V5z"/></svg></div>
+      <div class="acc-info"><div class="acc-title">Chat</div><div class="acc-desc">Display name and notifications for Atlas Chat</div></div>
+      <svg class="acc-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 5l5 5-5 5"/></svg>
+    </div>
+    <div class="acc-body">
+      <div class="fields">
+        <div class="field"><label class="lbl">Display name in chat</label><input id="chatName" class="inp" type="text" placeholder="Leave blank to use profile name"></div>
+        <div class="field"><label class="lbl">Notification sound</label><select id="chatSound" class="inp"><option value="on">Enabled</option><option value="off">Disabled</option></select></div>
+      </div>
+      <div class="actions"><button class="btn btn-primary" onclick="saveChat()">Save</button><span class="saved" id="chatSaved"></span></div>
+    </div>
+  </div>
+
+  <!-- ── STCK ── -->
+  <div class="acc" id="acc-stck">
+    <div class="acc-hd" onclick="toggleAcc('stck')">
+      <div class="acc-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 17h14M5 13l3-4 3 3 4-6"/></svg></div>
+      <div class="acc-info"><div class="acc-title">STCK</div><div class="acc-desc">Budget tracker pay and currency settings</div></div>
+      <svg class="acc-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 5l5 5-5 5"/></svg>
+    </div>
+    <div class="acc-body">
+      <div class="fields">
+        <div class="field"><label class="lbl">Currency symbol</label>
+          <select id="stckCurrency" class="inp"><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option><option value="¥">¥ JPY</option><option value="C$">C$ CAD</option><option value="A$">A$ AUD</option></select>
+        </div>
+        <div class="field"><label class="lbl">Budget alert threshold</label>
+          <input id="stckAlert" class="inp" type="number" placeholder="e.g. 500" min="0">
+          <span class="hint">Get a warning when weekly spending exceeds this amount</span>
+        </div>
+      </div>
+      <div class="actions"><button class="btn btn-primary" onclick="saveStck()">Save</button><span class="saved" id="stckSaved"></span></div>
+    </div>
+  </div>
+
+  <!-- ── CALENDAR ── -->
+  <div class="acc" id="acc-calendar">
+    <div class="acc-hd" onclick="toggleAcc('calendar')">
+      <div class="acc-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 8h14M7 2v4M13 2v4"/></svg></div>
+      <div class="acc-info"><div class="acc-title">Calendar</div><div class="acc-desc">Week start day and reminder defaults</div></div>
+      <svg class="acc-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 5l5 5-5 5"/></svg>
+    </div>
+    <div class="acc-body">
+      <div class="fields">
+        <div class="field"><label class="lbl">Week starts on</label>
+          <select id="calWeekStart" class="inp"><option value="0">Sunday</option><option value="1" selected>Monday</option></select>
+        </div>
+        <div class="field"><label class="lbl">Default reminder</label>
+          <select id="calReminder" class="inp"><option value="none">None</option><option value="15">15 minutes before</option><option value="30" selected>30 minutes before</option><option value="60">1 hour before</option><option value="1440">1 day before</option></select>
+        </div>
+      </div>
+      <div class="actions"><button class="btn btn-primary" onclick="saveCalendar()">Save</button><span class="saved" id="calSaved"></span></div>
+    </div>
+  </div>
+
+  <!-- ── STORAGE & DATA ── -->
+  <div class="acc" id="acc-storage">
+    <div class="acc-hd" onclick="toggleAcc('storage')">
+      <div class="acc-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="4" width="16" height="5" rx="1.5"/><rect x="2" y="11" width="16" height="5" rx="1.5"/><circle cx="16" cy="6.5" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="13.5" r="1" fill="currentColor" stroke="none"/></svg></div>
+      <div class="acc-info"><div class="acc-title">Storage & Data</div><div class="acc-desc">Local data usage and management</div></div>
+      <svg class="acc-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 5l5 5-5 5"/></svg>
+    </div>
+    <div class="acc-body">
+      <div class="storage-grid">
+        <div class="storage-item"><div class="lbl">Local storage used</div><div class="storage-val" id="storageUsed">—</div></div>
+        <div class="storage-item"><div class="lbl">Atlas version</div><div class="storage-val">4.0</div></div>
+        <div class="storage-item"><div class="lbl">Status</div><div class="storage-val" id="onlineStatus">—</div></div>
+        <div class="storage-item"><div class="lbl">Saved items</div><div class="storage-val" id="savedItems">—</div></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-ghost" onclick="exportData()">Export data</button>
+        <button class="btn btn-danger" onclick="clearAllData()">Clear all data</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function g(k){try{return JSON.parse(localStorage.getItem(k)||'null');}catch(e){return null;}}
+function s(k,v){localStorage.setItem(k,JSON.stringify(v));}
+function ss(k,v){localStorage.setItem(k,v);}
+function showSaved(id,msg,color){const el=document.getElementById(id);if(!el)return;el.textContent=msg||'Saved';el.style.color=color||'#1ca672';setTimeout(()=>el.textContent='',3500);}
+
+window.togglePw=function(id,btn){const inp=document.getElementById(id);if(!inp)return;inp.type=inp.type==='password'?'text':'password';};
+
+window.toggleAcc=function(id){
+  const acc=document.getElementById('acc-'+id);
+  if(!acc)return;
+  acc.classList.toggle('open');
+};
+
+function init(){
+  // Profile
+  const p=g('atlas_profile');
+  if(p){
+    const l=(p.name||'A').charAt(0).toUpperCase();
+    document.getElementById('settAv').textContent=l;
+    document.getElementById('settAvName').textContent=p.name||'—';
+    document.getElementById('settAvEmail').textContent=p.email||'—';
+    document.getElementById('sName').value=p.name||'';
+    document.getElementById('sEmail').value=p.email||'';
+    const freq=document.getElementById('sFreq');if(p.payFrequency&&freq)freq.value=p.payFrequency;
+    document.getElementById('sRate').value=p.hourlyRate||'';
+  }
+
+  // AdvisorE / Groq
+  const advKey = localStorage.getItem('advisore_groq_key')||'';
+  const advModel = localStorage.getItem('advisore_model')||'meta-llama/llama-4-scout-17b-16e-instruct';
+  if(advKey){
+    document.getElementById('advKey').value=advKey;
+    const b=document.getElementById('advBadge');if(b){b.textContent='Configured';b.className='acc-badge badge-ok';}
+  }
+  const m=document.getElementById('advModel');if(advModel&&m)m.value=advModel;
+
+  // Shopify
+  const sh=g('atlas_shopify');
+  const shB=document.getElementById('shopifyBadge');
+  if(sh&&sh.domain){
+    document.getElementById('shDomain').value=sh.domain||'';
+    document.getElementById('shToken').value=sh.token||'';
+    if(shB){shB.textContent='Connected';shB.className='acc-badge badge-ok';}
+  } else {
+    if(shB){shB.textContent='Not connected';shB.className='acc-badge';}
+  }
+
+  // Gmail
+  const gm=g('atlas_gmail');
+  const gmB=document.getElementById('gmailBadge');
+  if(gm&&gm.clientId){
+    document.getElementById('gmClientId').value=gm.clientId||'';
+    document.getElementById('gmSecret').value=gm.clientSecret||'';
+    if(gmB){gmB.textContent='Configured';gmB.className='acc-badge badge-ok';}
+  } else {
+    if(gmB){gmB.textContent='Not connected';gmB.className='acc-badge';}
+  }
+
+  // Editor
+  const ed=g('atlas_editor_settings');
+  if(ed){
+    const th=document.getElementById('editorTheme');if(ed.theme&&th)th.value=ed.theme;
+    const fs=document.getElementById('editorFontSize');if(ed.fontSize&&fs)fs.value=ed.fontSize;
+    const ts=document.getElementById('editorTabSize');if(ed.tabSize&&ts)ts.value=ed.tabSize;
+    const ww=document.getElementById('editorWordWrap');if(ed.wordWrap&&ww)ww.value=ed.wordWrap;
+    const ap=document.getElementById('editorAutoPush');if(ed.autoPush&&ap)ap.value=ed.autoPush;
+  }
+
+  // SiteBuilder
+  const sb=g('atlas_sitebuilder_settings');
+  if(sb){
+    document.getElementById('sbThemeName').value=sb.themeName||'';
+    const ex=document.getElementById('sbExport');if(sb.exportFormat&&ex)ex.value=sb.exportFormat;
+    const gr=document.getElementById('sbGrid');if(sb.grid&&gr)gr.value=sb.grid;
+  }
+
+  // Chat
+  const ch=g('atlas_chat_settings');
+  if(ch){
+    document.getElementById('chatName').value=ch.displayName||'';
+    const cs=document.getElementById('chatSound');if(ch.notifSound&&cs)cs.value=ch.notifSound;
+  }
+
+  // STCK
+  const st=g('atlas_stck_settings');
+  if(st){
+    const cur=document.getElementById('stckCurrency');if(st.currency&&cur)cur.value=st.currency;
+    document.getElementById('stckAlert').value=st.alertThreshold||'';
+  }
+
+  // Calendar
+  const cal=g('atlas_calendar_settings');
+  if(cal){
+    const ws=document.getElementById('calWeekStart');if(cal.weekStart!==undefined&&ws)ws.value=cal.weekStart;
+    const rem=document.getElementById('calReminder');if(cal.reminder&&rem)rem.value=cal.reminder;
+  }
+
+  // Storage stats
+  let total=0,items=0;
+  try{for(let k in localStorage){total+=(localStorage[k]||'').length;items++;}}catch(e){}
+  document.getElementById('storageUsed').textContent=(total/1024).toFixed(1)+' KB';
+  document.getElementById('savedItems').textContent=items+' keys';
+  document.getElementById('onlineStatus').textContent=navigator.onLine?'Online ●':'Offline ○';
+
+  // Offline banner
+  if(!navigator.onLine) document.getElementById('offlineBanner').classList.add('show');
+  window.addEventListener('online',()=>document.getElementById('offlineBanner').classList.remove('show'));
+  window.addEventListener('offline',()=>document.getElementById('offlineBanner').classList.add('show'));
+}
+
+window.saveProfile=function(){
+  const p=g('atlas_profile')||{};
+  const name=document.getElementById('sName').value.trim();
+  p.name=name;p.payFrequency=document.getElementById('sFreq').value;p.hourlyRate=parseFloat(document.getElementById('sRate').value)||0;
+  s('atlas_profile',p);
+  document.getElementById('settAv').textContent=(name||'A').charAt(0).toUpperCase();
+  document.getElementById('settAvName').textContent=name||'—';
+  try{parent.postMessage({type:'atlas-profile-updated'},'*');}catch(e){}
+  showSaved('profileSaved','Saved');
+};
+
+window.saveAdvisorE=function(){
+  const key=document.getElementById('advKey').value.trim();
+  const model=document.getElementById('advModel').value;
+  if(key) ss('advisore_groq_key',key);
+  ss('advisore_model',model);
+  // Also store in atlas_ai for Editor to pick up
+  s('atlas_ai',{groqKey:key,model});
+  const b=document.getElementById('advBadge');
+  if(b){b.textContent=key?'Configured':'Not configured';b.className='acc-badge'+(key?' badge-ok':'');}
+  showSaved('advSaved','Saved');
+};
+
+window.saveShopify=function(){
+  let domain=document.getElementById('shDomain').value.trim().replace(/^https?:\/\//,'').replace(/\/$/,'');
+  const token=document.getElementById('shToken').value.trim();
+  if(!domain||!token){showSaved('shopifySaved','Enter both fields','#e0245e');return;}
+  if(!domain.includes('.'))domain+='.myshopify.com';
+  s('atlas_shopify',{domain,token});
+  const b=document.getElementById('shopifyBadge');
+  if(b){b.textContent='Connected';b.className='acc-badge badge-ok';}
+  showSaved('shopifySaved','Saved');
+};
+
+window.clearShopify=function(){
+  if(!confirm('Disconnect Shopify?'))return;
+  localStorage.removeItem('atlas_shopify');
+  document.getElementById('shDomain').value='';
+  document.getElementById('shToken').value='';
+  const b=document.getElementById('shopifyBadge');
+  if(b){b.textContent='Not connected';b.className='acc-badge';}
+};
+
+window.saveGmail=function(){
+  const clientId=document.getElementById('gmClientId').value.trim();
+  const clientSecret=document.getElementById('gmSecret').value.trim();
+  if(!clientId||!clientSecret){showSaved('gmailSaved','Enter both fields','#e0245e');return;}
+  s('atlas_gmail',{clientId,clientSecret});
+  const b=document.getElementById('gmailBadge');
+  if(b){b.textContent='Configured';b.className='acc-badge badge-ok';}
+  showSaved('gmailSaved','Saved');
+};
+
+window.authorizeGmail=function(){
+  const gm=g('atlas_gmail');
+  if(!gm||!gm.clientId){alert('Save your Gmail credentials first.');return;}
+  const redirectUri=encodeURIComponent(window.location.href.split('?')[0]);
+  const scope=encodeURIComponent('https://www.googleapis.com/auth/gmail.modify');
+  window.open('https://accounts.google.com/o/oauth2/v2/auth?client_id='+gm.clientId+'&redirect_uri='+redirectUri+'&response_type=code&scope='+scope+'&access_type=offline&prompt=consent','_blank');
+};
+
+window.saveEditor=function(){
+  s('atlas_editor_settings',{
+    theme:document.getElementById('editorTheme').value,
+    fontSize:document.getElementById('editorFontSize').value,
+    tabSize:document.getElementById('editorTabSize').value,
+    wordWrap:document.getElementById('editorWordWrap').value,
+    autoPush:document.getElementById('editorAutoPush').value
+  });
+  showSaved('editorSaved','Saved');
+};
+
+window.saveSiteBuilder=function(){
+  s('atlas_sitebuilder_settings',{
+    themeName:document.getElementById('sbThemeName').value.trim(),
+    exportFormat:document.getElementById('sbExport').value,
+    grid:document.getElementById('sbGrid').value
+  });
+  showSaved('sbSaved','Saved');
+};
+
+window.saveChat=function(){
+  s('atlas_chat_settings',{displayName:document.getElementById('chatName').value.trim(),notifSound:document.getElementById('chatSound').value});
+  showSaved('chatSaved','Saved');
+};
+
+window.saveStck=function(){
+  s('atlas_stck_settings',{currency:document.getElementById('stckCurrency').value,alertThreshold:parseFloat(document.getElementById('stckAlert').value)||0});
+  showSaved('stckSaved','Saved');
+};
+
+window.saveCalendar=function(){
+  s('atlas_calendar_settings',{weekStart:parseInt(document.getElementById('calWeekStart').value),reminder:document.getElementById('calReminder').value});
+  showSaved('calSaved','Saved');
+};
+
+window.exportData=function(){
+  const data={};
+  try{for(let k in localStorage){data[k]=localStorage.getItem(k);}}catch(e){}
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='atlas-data-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+};
+
+window.clearAllData=function(){
+  if(!confirm('Delete ALL Atlas data? This cannot be undone.'))return;
+  localStorage.clear();
+  try{parent.postMessage({type:'atlas-signout'},'*');}catch(e){}
+};
+
+init();
+</script>
+</body>
+</html>

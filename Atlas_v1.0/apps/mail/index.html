@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mail · Atlas</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="mail-layout">
+
+  <!-- Sidebar -->
+  <aside class="mail-sidebar">
+    <button class="mail-compose-btn" onclick="openCompose()">
+      <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+      Compose
+    </button>
+
+    <nav class="mail-folders" id="mailFolders">
+      <button class="mail-folder active" data-folder="inbox" onclick="setFolder('inbox')">
+        <svg class="mf-ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="16" height="13" rx="2"/><path d="M2 7l8 5 8-5"/></svg>
+        <span>Inbox</span>
+        <span class="mail-folder-count" id="cnt-inbox"></span>
+      </button>
+      <button class="mail-folder" data-folder="starred" onclick="setFolder('starred')">
+        <svg class="mf-ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l2.4 4.9L18 7.6l-4 3.9 1 5.5-5-2.6-5 2.6.9-5.5-4-3.9 5.6-.7z"/></svg>
+        <span>Starred</span>
+        <span class="mail-folder-count" id="cnt-starred"></span>
+      </button>
+      <button class="mail-folder" data-folder="sent" onclick="setFolder('sent')">
+        <svg class="mf-ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2L2 9l7 3 1 7 8-17z"/><path d="M9 12l4-4"/></svg>
+        <span>Sent</span>
+      </button>
+      <button class="mail-folder" data-folder="drafts" onclick="setFolder('drafts')">
+        <svg class="mf-ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2l4 4-9 9H5v-4z"/><path d="M12 4l4 4"/></svg>
+        <span>Drafts</span>
+        <span class="mail-folder-count" id="cnt-drafts"></span>
+      </button>
+      <button class="mail-folder" data-folder="trash" onclick="setFolder('trash')">
+        <svg class="mf-ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 7 5 18 15 18 15 7"/><path d="M3 7h14"/><path d="M8 7V4h4v3"/></svg>
+        <span>Trash</span>
+      </button>
+    </nav>
+
+    <div class="mail-sidebar-foot">
+      <div class="mail-storage-bar">
+        <div class="mail-storage-fill" id="storageFill" style="width:12%"></div>
+      </div>
+      <div class="mail-storage-lbl">Local storage · private</div>
+    </div>
+  </aside>
+
+  <!-- Message list -->
+  <div class="mail-list-col">
+    <div class="mail-list-head">
+      <span class="mail-list-title" id="folderTitle">Inbox</span>
+      <div class="mail-list-actions">
+        <button class="mail-icon-btn" onclick="markAllRead()" title="Mark all read">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 10l5 5 11-11"/></svg>
+        </button>
+        <button class="mail-icon-btn" onclick="emptyFolder()" title="Delete all in folder">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 7 5 18 15 18 15 7"/><path d="M3 7h14"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="mailList" class="mail-list"></div>
+  </div>
+
+  <!-- Reading pane -->
+  <div class="mail-reader" id="mailReader">
+    <div class="mail-empty-state" id="mailEmptyState">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity=".2"><rect x="4" y="8" width="40" height="32" rx="4"/><path d="M4 16l20 13 20-13"/></svg>
+      <div class="mail-empty-label">Select a message</div>
+    </div>
+    <div id="mailMessage" style="display:none">
+      <div class="mail-msg-topbar">
+        <button class="mail-icon-btn" onclick="archiveOpen()" title="Archive">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="16" height="4" rx="1"/><path d="M4 7v9a2 2 0 002 2h8a2 2 0 002-2V7"/><path d="M8 11h4"/></svg>
+        </button>
+        <button class="mail-icon-btn" onclick="starOpen()" title="Star" id="starBtn">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" id="starIcon"><path d="M10 2l2.4 4.9L18 7.6l-4 3.9 1 5.5-5-2.6-5 2.6.9-5.5-4-3.9 5.6-.7z"/></svg>
+        </button>
+        <button class="mail-icon-btn" onclick="deleteOpen()" title="Delete">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 7 5 18 15 18 15 7"/><path d="M3 7h14"/><path d="M8 7V4h4v3"/></svg>
+        </button>
+        <div style="flex:1"></div>
+        <button class="mail-action-btn" onclick="replyOpen()">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7L4 12l5 5"/><path d="M4 12h9a4 4 0 010 8v0"/></svg>
+          Reply
+        </button>
+        <button class="mail-action-btn" onclick="forwardOpen()">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7l5 5-5 5"/><path d="M16 12H7a4 4 0 100 8v0"/></svg>
+          Forward
+        </button>
+      </div>
+      <div class="mail-msg-content">
+        <h2 class="mail-msg-subject" id="msgSubject"></h2>
+        <div class="mail-msg-meta">
+          <div class="mail-msg-avatar" id="msgAvatar">?</div>
+          <div>
+            <div class="mail-msg-from" id="msgFrom"></div>
+            <div class="mail-msg-date" id="msgDate"></div>
+          </div>
+        </div>
+        <div class="mail-msg-body" id="msgBody"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Compose modal -->
+<div class="mail-overlay" id="composeOverlay" style="display:none" onclick="if(event.target===this)closeCompose()">
+  <div class="mail-compose-card" id="composeCard">
+    <div class="mail-compose-head">
+      <span class="mail-compose-title" id="composeTitleLabel">New Message</span>
+      <button class="mail-icon-btn" onclick="closeCompose()">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="5" y1="5" x2="15" y2="15"/><line x1="15" y1="5" x2="5" y2="15"/></svg>
+      </button>
+    </div>
+    <div class="mail-compose-fields">
+      <div class="mail-compose-field">
+        <label class="mc-lbl">To</label>
+        <input class="mc-input" id="composeTo" placeholder="recipient@example.com">
+      </div>
+      <div class="mail-compose-field">
+        <label class="mc-lbl">Subject</label>
+        <input class="mc-input" id="composeSubject" placeholder="Subject">
+      </div>
+    </div>
+    <textarea class="mail-compose-body" id="composeBody" placeholder="Write your message…"></textarea>
+    <div class="mail-compose-footer">
+      <button class="mail-send-btn" onclick="sendMessage()">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2L2 9l7 3 1 7 8-17z"/></svg>
+        Send
+      </button>
+      <button class="mail-discard-btn" onclick="saveDraft()">Save Draft</button>
+      <button class="mail-discard-btn" onclick="closeCompose()">Discard</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

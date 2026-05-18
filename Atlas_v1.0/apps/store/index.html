@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Store · Atlas</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="sp-app">
+
+  <!-- Sidebar -->
+  <nav class="sp-nav">
+    <div class="sp-nav-brand">
+      <div class="sp-nav-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      </div>
+      <span class="sp-nav-store-name" id="storeName">My Store</span>
+    </div>
+    <div class="sp-nav-items">
+      <button class="sp-nav-item active" data-view="overview" onclick="setView('overview')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></svg>
+        Overview
+      </button>
+      <button class="sp-nav-item" data-view="orders" onclick="setView('orders')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 6h14l-1 11a2 2 0 01-2 2H6a2 2 0 01-2-2L3 6z"/><path d="M7 6V4a3 3 0 016 0v2"/></svg>
+        Orders
+        <span class="sp-nav-badge" id="pendingBadge" style="display:none">0</span>
+      </button>
+      <button class="sp-nav-item" data-view="products" onclick="setView('products')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 7l10-5 10 5v11l-10 5L2 18V7z"/><path d="M12 2v20M2 7l10 5 10-5"/></svg>
+        Products
+      </button>
+      <button class="sp-nav-item" data-view="analytics" onclick="setView('analytics')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 17h14M5 13l3-4 3 3 4-6"/></svg>
+        Analytics
+      </button>
+    </div>
+    </nav>
+
+  <!-- Main -->
+  <main class="sp-main">
+
+    <!-- OVERVIEW -->
+    <div class="sp-view" id="view-overview">
+      <div class="sp-page-head">
+        <h1 class="sp-page-title">Overview</h1>
+        
+      </div>
+      <div class="sp-stats-row">
+        <div class="sp-stat-card">
+          <div class="sp-stat-label">Total Revenue</div>
+          <div class="sp-stat-value" id="overviewRevenue">$0</div>
+          <div class="sp-stat-change positive" id="overviewRevenueChange">—</div>
+        </div>
+        <div class="sp-stat-card">
+          <div class="sp-stat-label">Orders</div>
+          <div class="sp-stat-value" id="overviewOrders">0</div>
+          <div class="sp-stat-change" id="overviewOrdersChange">—</div>
+        </div>
+        <div class="sp-stat-card">
+          <div class="sp-stat-label">Products</div>
+          <div class="sp-stat-value" id="overviewProducts">0</div>
+        </div>
+        <div class="sp-stat-card">
+          <div class="sp-stat-label">Low Stock</div>
+          <div class="sp-stat-value danger" id="overviewLowStock">0</div>
+        </div>
+      </div>
+      <div class="sp-two-col">
+        <div class="sp-card">
+          <div class="sp-card-head"><h3>Recent Orders</h3><button class="sp-link" onclick="setView('orders')">View all</button></div>
+          <div id="recentOrdersList" class="sp-order-list"></div>
+        </div>
+        <div class="sp-card">
+          <div class="sp-card-head"><h3>Order Map</h3><span class="sp-card-hint">Locations this month</span></div>
+          <div class="sp-map-wrap">
+            <svg class="sp-map" viewBox="0 0 900 500" id="orderMap"></svg>
+            <div class="sp-map-dots" id="mapDots"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="sp-view" id="view-orders" style="display:none">
+      <div class="sp-page-head">
+        <h1 class="sp-page-title">Orders</h1>
+        <button class="sp-btn primary" onclick="showAddOrder()">+ Add Order</button>
+      </div>
+      <div class="sp-filter-row">
+        <button class="sp-filter active" data-filter="All" onclick="setOrderFilter('All')">All</button>
+        <button class="sp-filter" data-filter="Pending" onclick="setOrderFilter('Pending')">Pending</button>
+        <button class="sp-filter" data-filter="Processing" onclick="setOrderFilter('Processing')">Processing</button>
+        <button class="sp-filter" data-filter="Shipped" onclick="setOrderFilter('Shipped')">Shipped</button>
+        <button class="sp-filter" data-filter="Delivered" onclick="setOrderFilter('Delivered')">Delivered</button>
+        <button class="sp-filter" data-filter="Cancelled" onclick="setOrderFilter('Cancelled')">Cancelled</button>
+      </div>
+      <div class="sp-card" style="padding:0;overflow:hidden">
+        <table class="sp-table">
+          <thead><tr><th>Order</th><th>Customer</th><th>Product</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="sp-view" id="view-products" style="display:none">
+      <div class="sp-page-head">
+        <h1 class="sp-page-title">Products</h1>
+        <button class="sp-btn primary" onclick="showAddProduct()">+ Add Product</button>
+      </div>
+      <div class="sp-card" style="padding:0;overflow:hidden">
+        <table class="sp-table">
+          <thead><tr><th>Product</th><th>SKU</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
+          <tbody id="productsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="sp-view" id="view-analytics" style="display:none">
+      <div class="sp-page-head"><h1 class="sp-page-title">Analytics</h1></div>
+      <div class="sp-stats-row">
+        <div class="sp-stat-card">
+          <div class="sp-stat-label">Avg Order Value</div>
+          <div class="sp-stat-value" id="avgOrder">$0</div>
+        </div>
+        <div class="sp-stat-card">
+          <div class="sp-stat-label">Total Units Sold</div>
+          <div class="sp-stat-value" id="totalUnits">0</div>
+        </div>
+        <div class="sp-stat-card">
+          <div class="sp-stat-label">Cancellation Rate</div>
+          <div class="sp-stat-value" id="cancelRate">0%</div>
+        </div>
+        <div class="sp-stat-card">
+          <div class="sp-stat-label">Top Product</div>
+          <div class="sp-stat-value" style="font-size:14px" id="topProduct">—</div>
+        </div>
+      </div>
+      <div class="sp-card">
+        <div class="sp-card-head"><h3>Orders by Status</h3></div>
+        <div id="statusBreakdown" class="sp-status-breakdown"></div>
+      </div>
+      <div class="sp-card" style="margin-top:16px">
+        <div class="sp-card-head"><h3>Top Products by Revenue</h3></div>
+        <div id="topProducts" class="sp-top-products"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ADD ORDER MODAL -->
+<div class="sp-modal-bg" id="addOrderModal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="sp-modal">
+    <div class="sp-modal-head"><h3>New Order</h3><button class="sp-modal-close" onclick="document.getElementById('addOrderModal').style.display='none'">×</button></div>
+    <div class="sp-modal-body">
+      <div class="sp-form-field"><label>Customer Name</label><input id="of-customer" class="sp-input" placeholder="John Smith"></div>
+      <div class="sp-form-field"><label>Product</label>
+        <select id="of-product" class="sp-input"></select>
+      </div>
+      <div class="sp-form-row">
+        <div class="sp-form-field"><label>Size / Variant</label><input id="of-size" class="sp-input" placeholder="M / One Size"></div>
+        <div class="sp-form-field"><label>Qty</label><input id="of-qty" class="sp-input" type="number" value="1" min="1"></div>
+      </div>
+      <div class="sp-form-field"><label>City (for map)</label><input id="of-city" class="sp-input" placeholder="New York"></div>
+    </div>
+    <div class="sp-modal-foot">
+      <button class="sp-btn ghost" onclick="document.getElementById('addOrderModal').style.display='none'">Cancel</button>
+      <button class="sp-btn primary" onclick="submitOrder()">Add Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div class="sp-modal-bg" id="addProductModal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="sp-modal">
+    <div class="sp-modal-head"><h3 id="productModalTitle">Add Product</h3><button class="sp-modal-close" onclick="document.getElementById('addProductModal').style.display='none'">×</button></div>
+    <div class="sp-modal-body">
+      <div class="sp-form-field"><label>Product Name</label><input id="pf-name" class="sp-input" placeholder="Classic Hoodie"></div>
+      <div class="sp-form-row">
+        <div class="sp-form-field"><label>Price ($)</label><input id="pf-price" class="sp-input" type="number" step="0.01" placeholder="49.99"></div>
+        <div class="sp-form-field"><label>Stock</label><input id="pf-stock" class="sp-input" type="number" placeholder="100"></div>
+      </div>
+      <div class="sp-form-row">
+        <div class="sp-form-field"><label>Category</label>
+          <select id="pf-cat" class="sp-input">
+            <option>Tops</option><option>Bottoms</option><option>Outerwear</option><option>Accessories</option><option>Footwear</option><option>Other</option>
+          </select>
+        </div>
+        <div class="sp-form-field"><label>Cost ($)</label><input id="pf-cost" class="sp-input" type="number" step="0.01" placeholder="20.00"></div>
+      </div>
+    </div>
+    <div class="sp-modal-foot">
+      <button class="sp-btn ghost" onclick="document.getElementById('addProductModal').style.display='none'">Cancel</button>
+      <button class="sp-btn primary" onclick="submitProduct()">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

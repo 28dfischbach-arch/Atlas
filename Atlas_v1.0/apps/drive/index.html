@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Drive · Atlas</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="drive-layout">
+
+  <!-- Header -->
+  <div class="drive-header">
+    <div class="drive-search-wrap">
+      <svg class="drive-search-ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="9" cy="9" r="6"/><path d="M14 14l4 4"/></svg>
+      <input class="drive-search-input" id="searchInput" placeholder="Search everything in Atlas…" oninput="onSearch()" autofocus>
+      <button class="drive-clear-btn" id="clearBtn" onclick="clearSearch()" style="display:none">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="15" y2="15"/><line x1="15" y1="5" x2="5" y2="15"/></svg>
+      </button>
+    </div>
+    <div class="drive-filters" id="filterBar">
+      <button class="drive-filter active" data-filter="all" onclick="setFilter('all')">All</button>
+      <button class="drive-filter" data-filter="file" onclick="setFilter('file')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 2H4a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V6l-4-4z"/><path d="M9 2v4h4"/></svg>
+        Files
+      </button>
+      <button class="drive-filter" data-filter="email" onclick="setFilter('email')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M2 6l6 4 6-4"/></svg>
+        Emails
+      </button>
+      <button class="drive-filter" data-filter="event" onclick="setFilter('event')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 7h12M5 2v2M11 2v2"/></svg>
+        Events
+      </button>
+      <button class="drive-filter" data-filter="note" onclick="setFilter('note')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 4h10M3 8h10M3 12h6"/></svg>
+        Notes
+      </button>
+    </div>
+  </div>
+
+  <!-- Results area -->
+  <div class="drive-results-wrap">
+    <!-- Quick stats -->
+    <div class="drive-stats" id="driveStats">
+      <div class="drive-stat-card" onclick="setFilter('file')">
+        <div class="ds-icon file">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M11 2H5a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V8l-6-6z"/><path d="M11 2v6h6"/></svg>
+        </div>
+        <div>
+          <div class="ds-val" id="statFiles">0</div>
+          <div class="ds-lbl">Files</div>
+        </div>
+      </div>
+      <div class="drive-stat-card" onclick="setFilter('email')">
+        <div class="ds-icon email">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="16" height="13" rx="2"/><path d="M2 7l8 5 8-5"/></svg>
+        </div>
+        <div>
+          <div class="ds-val" id="statEmails">0</div>
+          <div class="ds-lbl">Emails</div>
+        </div>
+      </div>
+      <div class="drive-stat-card" onclick="setFilter('event')">
+        <div class="ds-icon event">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 8h14M7 2v4M13 2v4"/></svg>
+        </div>
+        <div>
+          <div class="ds-val" id="statEvents">0</div>
+          <div class="ds-lbl">Events</div>
+        </div>
+      </div>
+      <div class="drive-stat-card" onclick="setFilter('note')">
+        <div class="ds-icon note">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 6h12M4 10h12M4 14h8"/></svg>
+        </div>
+        <div>
+          <div class="ds-val" id="statNotes">0</div>
+          <div class="ds-lbl">Notes</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results list -->
+    <div class="drive-results" id="driveResults" style="display:none"></div>
+
+    <!-- Empty state -->
+    <div class="drive-empty" id="driveEmpty" style="display:none">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".2"><circle cx="21" cy="21" r="14"/><path d="M32 32l10 10"/></svg>
+      <div class="drive-empty-title">No results found</div>
+      <div class="drive-empty-sub">Try different keywords or check another filter</div>
+    </div>
+  </div>
+</div>
+<script src="js/main.js"></script>
+</body>
+</html>
