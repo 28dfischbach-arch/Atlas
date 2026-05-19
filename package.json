@@ -1,0 +1,32 @@
+{
+  "name": "atlas",
+  "version": "1.0.0",
+  "description": "Atlas is a multi-app web platform that bundles a variety of productivity and utility applications into a single project. This README provides an overview of the project structure and instructions on how to get started after extracting the `Atlas.zip` archive.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/28dfischbach-arch/Atlas.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/28dfischbach-arch/Atlas/issues"
+  },
+  "homepage": "https://github.com/28dfischbach-arch/Atlas#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
+  "devDependencies": {
+    "eslint": "^10.4.0",
+    "prettier": "^3.8.3",
+    "tailwindcss": "^4.3.0",
+    "vite": "^8.0.13"
+  }
+}
